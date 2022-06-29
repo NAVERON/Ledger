@@ -8,6 +8,11 @@
   
   <packaging>pom</packaging>
   
+  <properties>
+	<!-- 提供pom属性 -->
+	<java.version>17</java.version>
+  </properties>
+  
   <modules>
       <module>ledger-client</module>
       <module>ledger-cloud</module>

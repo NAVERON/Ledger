@@ -29,7 +29,14 @@
   
   
   <dependencies>
-  
+    
+    <!-- 引用公共模块 -->
+    <dependency>
+        <groupId>com.evs</groupId>
+        <artifactId>ledger-common</artifactId>
+        <version>1.0</version>
+    </dependency>
+    
     <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-base -->
     <dependency>
         <groupId>org.openjfx</groupId>

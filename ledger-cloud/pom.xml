@@ -9,6 +9,7 @@
   </parent>
   
   <artifactId>ledger-cloud</artifactId>
+  <version>1.0</version>
   <packaging>jar</packaging>
   
   <properties>
@@ -31,10 +32,19 @@
   </dependencyManagement>
   
   <dependencies>
+  
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+    
+    <!-- 引用公共模块 -->
+    <dependency>
+        <groupId>com.evs</groupId>
+        <artifactId>ledger-common</artifactId>
+        <version>1.0</version>
+    </dependency>
+    
     
   </dependencies>
   

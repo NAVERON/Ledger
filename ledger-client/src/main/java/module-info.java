@@ -9,6 +9,7 @@ module ledger {
     
     requires org.slf4j;
     requires org.slf4j.simple;
+    requires common;
     
     exports ledger;
     

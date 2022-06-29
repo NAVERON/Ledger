@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 
 
+
 public class LedgerClientLauncher extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(LedgerClientLauncher.class);

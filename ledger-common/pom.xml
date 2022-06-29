@@ -9,6 +9,7 @@
   </parent>
   
   <artifactId>ledger-common</artifactId>
+  <version>1.0</version>
   
   <dependencies>
   
