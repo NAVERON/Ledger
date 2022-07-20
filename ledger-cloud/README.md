@@ -13,6 +13,10 @@ Ledger Cloud Service Provider
 - Redis, Zookeeper, Kafka等中间件  
 - 配置springboot 使用ubderflow 新的web容器  
 
+## 学习记录  
+
+1. 使用shiro完成身份授权和认证部分  
+
 
 
 
