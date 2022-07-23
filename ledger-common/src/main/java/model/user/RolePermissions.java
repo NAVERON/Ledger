@@ -1,9 +1,12 @@
 package model.user;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,19 +14,19 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity 
-@Table(name = "roles_permission")
+@Table(name = "role_permission")
 public class RolePermissions {
 
     @Id 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "role")
-    @Enumerated 
+    @Column(name = "role_type")
+    @Enumerated(value = EnumType.STRING) 
     private RoleType roleType;
-    @Column(name = "desc")
-    private String descript;
-    @Column(name = "permission")
-    private List<String> permissions;
+    @Column(name = "description")
+    private String description;  // 特殊描述 
+    @Column(name = "permissions")
+    private String permissions;  // 权限list 
     
     public RoleType getRoleType() {
         return roleType;
@@ -34,11 +37,13 @@ public class RolePermissions {
     }
 
     public List<String> getPermissions() {
-        return permissions;
+        return Arrays.asList(this.permissions.split(","));
     }
 
     public void setPermissions(List<String> permissions) {
-        this.permissions = permissions;
+        StringJoiner sj = new StringJoiner(",");
+        permissions.forEach(perm -> sj.add(perm));
+        this.permissions = sj.toString();
     }
 
     @Override
@@ -46,3 +51,6 @@ public class RolePermissions {
         return "Role [roleType=" + roleType + ", permissions=" + permissions + "]";
     }
 }
+
+
+

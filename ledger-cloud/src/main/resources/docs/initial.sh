@@ -1,0 +1,8 @@
+
+# redis zookeeper kafka 
+
+# postgresql 
+
+
+
+

@@ -31,11 +31,13 @@
         <version>2.2</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
+    <!--
     <dependency>
         <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>6.1.1.Final</version>
     </dependency>
+    -->
     
     <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
     <dependency>

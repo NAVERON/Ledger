@@ -1,8 +1,6 @@
 package ledgerserver.utils;
 
 
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +9,7 @@ import io.lettuce.core.RedisException;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.TransactionResult;
 import io.lettuce.core.api.StatefulRedisConnection;
+import utils.RandomUtils;
 
 
 /**
@@ -49,7 +48,7 @@ public class RedisDistributedLock {
         try {
             connection = this.client.connect();
             
-            String uuid = UUID.randomUUID().toString();
+            String uuid = RandomUtils.generateUUID().toString();
             Long acquireEndTime = System.currentTimeMillis() + this.timeout;
             
             while(acquireEndTime < System.currentTimeMillis()) {

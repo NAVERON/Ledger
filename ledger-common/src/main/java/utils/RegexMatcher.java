@@ -11,6 +11,8 @@ import model.UserIdentifierTypeEnum;
 
 public class RegexMatcher {
 
+    // 作为一个接口 实现多个实现类 分别匹配邮箱,电话等特殊格式 实现类内部半丁不同的enum 
+    // 使用一个包装类 接收 string identifier 使用各个实现类匹配 如果true返回对应的 enum 
     private static final Logger log = LoggerFactory.getLogger(RegexMatcher.class);
     
     private static final String telePhoneRegex = "^[1][3,4,5,7,8][0-9]{9}$";

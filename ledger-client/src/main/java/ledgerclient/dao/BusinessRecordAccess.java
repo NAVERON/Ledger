@@ -6,6 +6,6 @@ package ledgerclient.dao;
  * @author eron
  *
  */
-public interface PlaceHolder {
+public interface BusinessRecordAccess {
 
 }

@@ -16,7 +16,9 @@ Ledger Cloud Service Provider
 ## 学习记录  
 
 1. 使用shiro完成身份授权和认证部分  
-
+2. 连接postgresql pgcli -h localhost -p 5432 -U postgres  
+使用uri的格式 : pgcli postgres://postgres:wangyulong@113.31.119.92:5432/ledger  
+3. 
 
 
 

@@ -3,6 +3,8 @@ package model.user;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @Entity 
-@Table(name = "acount") 
+@Table(name = "user_acount") 
 public class UserAcount {
     
     private static final Logger log = LoggerFactory.getLogger(UserAcount.class);
@@ -27,18 +29,23 @@ public class UserAcount {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
-    @Column(name = "username")
+    @Column(name = "user_name")
     private String userName;
     @Column(name = "password")
     private String password;
-    @Column(name = "emailaddress")
+    @Column(name = "email_address")
     private String emailAddress;
-    @Column(name = "phonenumber")
+    @Column(name = "phone_number")
     private String phoneNumber;
-    @Embedded 
+    @Column(name = "role_type")
+    @Enumerated(value = EnumType.STRING)
     private RoleType roleType;
-    @Column(name = "roleId")
+    @Column(name = "role_id")
     private Long roleId;
+    
+    public Long getId() {
+        return this.id;
+    }
     
     public String getUserName() {
         return userName;
