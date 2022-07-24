@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController 
-@RequestMapping(value = "api/v1") 
+@RequestMapping(value = "") 
 public class HomeApi {
     
     private static final Logger log = LoggerFactory.getLogger(HomeApi.class);
     
-    // 获取当前api 逻辑和分布 
+    // 获取api相关的基本信息 可以做成文档形式的api 接口
     @GetMapping(value = "info")
     public ResponseEntity<String> info(){
         
@@ -38,7 +38,10 @@ public class HomeApi {
         return ResponseEntity.ok("HOME : login api = login?identifier=xx&password=xx");
     }
     
-    
+    @GetMapping(value = "error")
+    public ResponseEntity<String> error(){
+        return ResponseEntity.badRequest().body("ERROR !!!");
+    }
 }
 
 

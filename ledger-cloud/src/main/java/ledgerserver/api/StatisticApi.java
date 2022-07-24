@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController 
-@RequestMapping(value = "api/v1/common")
-public class CommonApi {
+@RequestMapping(value = "api/v1/statistic", name = "statistic api for api usage") 
+public class StatisticApi {
 
-    private static final Logger log = LoggerFactory.getLogger(CommonApi.class);
+    private static final Logger log = LoggerFactory.getLogger(StatisticApi.class);
 
-    @GetMapping(value = "test")
-    public ResponseEntity<String> test() {
+    @GetMapping(value = "info")
+    public ResponseEntity<String> info() {
         
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body("information");
     }
     
     

@@ -9,6 +9,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import configuration.ConstantConfig;
+import model.user.UserAndPermissionDTO;
+import utils.JWTUtils;
 
 /**
  * token 认证过程 拦截器逻辑 
@@ -36,28 +38,42 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         // controller before 
         // check token 
         log.info("request basic information ----->");
-        log.warn("request uri ---> {}, \nrequest URL --> {}, \nrequest query String --> {}", 
+        log.warn("request uri ---> {}, request URL --> {}, request query String --> {}", 
                 request.getRequestURI(), 
                 request.getRequestURL(), 
                 request.getQueryString() );
-        // 对于首页和登陆页面 不需要拦截 
-        
-        final String authorizationHeaderValue = request.getHeader(ConstantConfig.AUTHORIZATION_HEADER);
-        if(authorizationHeaderValue != null && authorizationHeaderValue.startsWith(ConstantConfig.HEADER_PREFIX)) {
-            String token = authorizationHeaderValue.substring(ConstantConfig.HEADER_PREFIX.length());
-            log.warn("get Header Token ---> {}", token);
-            return HandlerInterceptor.super.preHandle(request, response, handler);
-        }
-        
         log.error("preHandle check Header has Token, no Token, please LoginFirst and get Token");
-        return HandlerInterceptor.super.preHandle(request, response, handler);
-        // return false;
+        // 对于首页和登陆页面 不需要拦截 在webMvcConfiger 中直接配置 excludePathPattern 
+        String curPath = request.getRequestURI()
+                                    .substring(request.getContextPath().length())
+                                    .replaceAll("[/]+$", "");
+        log.info("计算当前 current path == > {}", curPath);
+        
+        final String authorizationHeader = request.getHeader(ConstantConfig.AUTHORIZATION_HEADER);
+        // 检查是否包含有效的token 不判断权限问题 
+        if(authorizationHeader != null && authorizationHeader.startsWith(ConstantConfig.HEADER_PREFIX)) {
+            String token = authorizationHeader.substring(ConstantConfig.HEADER_PREFIX.length());
+            log.warn("get Header Token ---> {}", token);
+            
+            UserAndPermissionDTO user = JWTUtils.getUser(token);
+            // 是否需要数据库检查是否是有效用户 ? 后期增加多重验证 
+            if(user != null) {
+                log.info("解析出来的user对象 --> {}", user.toString());
+                return HandlerInterceptor.super.preHandle(request, response, handler);
+            }
+        }
+        log.info("please login for generate Token for U ! Header 没有 JWT Token, 请登录 api 获取");
+        log.warn("跳转 ---> {}", request.getContextPath() + "/api/v1/home");
+        response.sendRedirect("/api/v1/home");
+        
+        return false;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
             ModelAndView modelAndView) throws Exception {
         // controller and before render view , so can  modify modelAndView 
+        log.info("AuthenticationInterceptor postHandle --> {}", request.toString());
         HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
     }
 
@@ -65,10 +81,17 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
         // response handle 
+        log.info("AuthenticationInterceptor afterCompletion --> {}", response.toString());
         HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
     }
     
     
 }
+
+
+
+
+
+
 
 

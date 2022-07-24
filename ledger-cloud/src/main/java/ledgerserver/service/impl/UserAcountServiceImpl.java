@@ -99,6 +99,48 @@ public class UserAcountServiceImpl implements UserAcountService {
         
         return userAndPermissionDTO;
     }
+
+    @Override
+    public UserAcount registUser(String identifier, String password) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserAcount registUser(String identifier, String password, String roleType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserAcount deleteUser(Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserAcount deleteUser(String identifier) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserAcount updateUserEmail(Long userId, String email) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserAcount updateUserPhone(Long userId, String phoneNumber) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserAcount updateUserName(Long userId, String userName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
     
 }
