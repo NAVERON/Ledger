@@ -51,20 +51,20 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         
         final String authorizationHeader = request.getHeader(ConstantConfig.AUTHORIZATION_HEADER);
         // 检查是否包含有效的token 不判断权限问题 
-        if(authorizationHeader != null && authorizationHeader.startsWith(ConstantConfig.HEADER_PREFIX)) {
-            String token = authorizationHeader.substring(ConstantConfig.HEADER_PREFIX.length());
+        if(authorizationHeader != null && authorizationHeader.startsWith(ConstantConfig.AUTH_HEADER_PREFIX)) {
+            String token = authorizationHeader.substring(ConstantConfig.AUTH_HEADER_PREFIX.length());
             log.warn("get Header Token ---> {}", token);
             
             UserAndPermissionDTO user = JWTUtils.getUser(token);
-            // 是否需要数据库检查是否是有效用户 ? 后期增加多重验证 
+            // 是否需要数据库检查是否是有效用户 ? 后期增加多重验证  需要验证jwt是否过期 强制用户刷新jwt重新请求接口, 但是会引入状态问题 后期考虑 
             if(user != null) {
                 log.info("解析出来的user对象 --> {}", user.toString());
                 return HandlerInterceptor.super.preHandle(request, response, handler);
             }
         }
         log.info("please login for generate Token for U ! Header 没有 JWT Token, 请登录 api 获取");
-        log.warn("跳转 ---> {}", request.getContextPath() + "/api/v1/home");
-        response.sendRedirect("/api/v1/home");
+        log.warn("跳转 ---> {}", request.getContextPath() + "/home");
+        response.sendRedirect("/home");
         
         return false;
     }

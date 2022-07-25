@@ -1,17 +1,23 @@
 package ledgerserver.utils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 
 @Component 
@@ -22,6 +28,8 @@ public class MailClient {
     
     @Resource 
     private JavaMailSender mailSender;
+    @Resource 
+    private SpringTemplateEngine templateEngine;
     
     @Value(value = "${spring.mail.username}")
     private String fromEmail;
@@ -31,9 +39,14 @@ public class MailClient {
         this.sendSimpleEmail(from, to, subject, content);
     }
     
-    public void sendHtmlEmail(String to, String subject, String content) {
+    public void sendHtmlEmail(String to, String subject, String template, Map<String, Object> params) {
         String from = this.fromEmail;
-        this.sendEmailWithHtmlTemplate(from, to, null, from);
+        try {
+            this.sendEmailWithHtmlTemplate(from, to, subject, template, params);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            log.error("sendHtmlEmail sendEmailWithHtmlTemplate ERROR --> {}", e.toString());
+        }
     }
     
     @Async 
@@ -49,11 +62,35 @@ public class MailClient {
     }
     
     @Async 
-    public void sendEmailWithHtmlTemplate(String from, String to, Map<String, String> params, String template) {
+    public void sendEmailWithHtmlTemplate(String from, String to, String subject, 
+            String template, Map<String, Object> params) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper 
+            = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED, StandardCharsets.UTF_8.name());
         
+        Context context = new Context();
+        context.setVariables(params);
+        String mailContent = templateEngine.process(template, context);
+        
+        mimeMessageHelper.setText(mailContent, true);
+        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setTo(to);
+        mimeMessageHelper.setSubject(subject);
+        
+        this.mailSender.send(mimeMessage);
+    }
+    
+    
+    // 发送激活邮件 
+    public void sendActiveAcountEmail(String to, Map<String, Object> params) {
+        String subject = "Active U Acount, Just Once ~";
+        String template = "emailTemplate/EmailVerificationActive.html";
+        this.sendHtmlEmail(to, subject, template, params);
     }
     
 }
+
+
 
 
 

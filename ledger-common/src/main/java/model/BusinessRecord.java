@@ -29,6 +29,12 @@ public class BusinessRecord {
     @Column(name = "record_time")
     private LocalDateTime recordTime;  // 记账时间 创建时间 
     
+    public BusinessRecord(Long userId, Double amount) {
+        this.userId = userId;
+        this.amount = amount;
+        this.recordTime = LocalDateTime.now();
+    }
+    
     public Long getUserId() {
         return userId;
     }

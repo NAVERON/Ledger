@@ -1,4 +1,4 @@
-package ledgerclient.components;
+package ledgerclient.views;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

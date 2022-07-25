@@ -1,5 +1,7 @@
 package ledgerserver.service;
 
+import java.util.List;
+
 import model.user.RolePermissions;
 import model.user.RoleType;
 import model.user.UserAcount;
@@ -14,9 +16,6 @@ public interface UserAcountService {
     public UserAcount getUserById(Long id);
     public UserAcount getUserAcountByIdentifierAndPassword(String identifier, String password);
     
-    // 根据角色类型获取角色权限 
-    public RolePermissions getRolePermissionByRoleType(RoleType roleType);
-    public RolePermissions getRolePermissionByRoleId(Long roleId);
     // 获取用户基本信息和权限信息
     public UserAndPermissionDTO getUserAndPermissions(String identifier, String password);
     
@@ -29,8 +28,21 @@ public interface UserAcountService {
     
     // 更新用户信息 
     public UserAcount updateUserEmail(Long userId, String email);
-    public UserAcount updateUserPhone(Long userId, String phoneNumber);
+    public UserAcount updateUserPhone(Long userId, String phone);
     public UserAcount updateUserName(Long userId, String userName);
+    
+    /**
+     * 关于权限表的查询和修改操作 
+     * 
+     */
+    // 根据角色类型获取角色权限 
+    public RolePermissions getRolePermissionByRoleType(RoleType roleType);
+    public RolePermissions getRolePermissionByRoleId(Long roleId);
+    
+    public RolePermissions addRolePermissions(RoleType roleType, List<String> permissions);
+    public RolePermissions addRolePermissions(RoleType roleType, String permissions);
+    public RolePermissions addRolePermissions(RoleType roleType, List<String> permissions, String description);
+    
 }
 
 

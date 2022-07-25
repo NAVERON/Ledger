@@ -6,9 +6,9 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -18,13 +18,13 @@ import org.springframework.web.client.RestTemplate;
 
 
 @Service 
+@Primary 
 public class AliPayServiceImpl {
     
     private static final Logger log = LoggerFactory.getLogger(AliPayServiceImpl.class);
     
     private RestTemplate client;
     
-    @Autowired 
     public AliPayServiceImpl() {
         RestTemplateBuilder builder = new RestTemplateBuilder(new RestTemplateCustomizer() {
             @Override 

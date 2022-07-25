@@ -1,5 +1,6 @@
 package model.user;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
@@ -28,6 +29,22 @@ public class RolePermissions {
     @Column(name = "permissions")
     private String permissions;  // 权限list 
     
+    public RolePermissions(RoleType roleType, String permissions) {
+        this.roleType = roleType;
+        this.permissions = permissions;
+    }
+    public RolePermissions(RoleType roleType, List<String> permissions) {
+        StringJoiner sj = new StringJoiner(",");
+        permissions.stream().forEach(perm -> sj.add(perm));
+        
+        this.roleType = roleType;
+        this.permissions = sj.toString();
+    }
+    public RolePermissions(RoleType roleType, List<String> permissions, String description) {
+        this(roleType, permissions);
+        this.description = description;
+    }
+    
     public RoleType getRoleType() {
         return roleType;
     }
@@ -37,7 +54,7 @@ public class RolePermissions {
     }
 
     public List<String> getPermissions() {
-        return Arrays.asList(this.permissions.split(","));
+        return Arrays.asList(this.permissions.split(","));  // 获取权限不需要修改 
     }
 
     public void setPermissions(List<String> permissions) {

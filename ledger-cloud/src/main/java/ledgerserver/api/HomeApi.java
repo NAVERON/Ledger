@@ -14,19 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  */
 @RestController 
-@RequestMapping(value = "") 
+@RequestMapping(value = "", name = "root and entry api") 
 public class HomeApi {
     
     private static final Logger log = LoggerFactory.getLogger(HomeApi.class);
     
     // 获取api相关的基本信息 可以做成文档形式的api 接口
-    @GetMapping(value = "info")
+    @GetMapping(value = "doc")
     public ResponseEntity<String> info(){
-        
-        return ResponseEntity.ok("api infomations : /api/v1/verification");
+        String doc = """
+                document for API information  
+                ----------------- 
+                """;
+        return ResponseEntity.ok("doc");
     }
-    
-    // 主页 相关
     
     @GetMapping(value = "index")
     public ResponseEntity<String> index(){
@@ -42,6 +43,13 @@ public class HomeApi {
     public ResponseEntity<String> error(){
         return ResponseEntity.badRequest().body("ERROR !!!");
     }
+    
+    @GetMapping(value = "404")
+    public ResponseEntity<String> notFound(){
+        return ResponseEntity.notFound().build();
+    }
+    
+    
 }
 
 

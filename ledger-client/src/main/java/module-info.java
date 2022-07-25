@@ -7,6 +7,8 @@ module ledgerclient {
     requires javafx.media;
     requires javafx.web;
     
+    requires java.net.http;
+    
     requires ledgercommon;
     
     requires org.slf4j;

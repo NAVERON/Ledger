@@ -22,10 +22,10 @@ import model.user.UserAndPermissionDTO;
 import utils.JWTUtils;
 
 @Component // 自动扫描 
-@WebFilter(filterName = "tokenVerification", urlPatterns = "/**") 
-public class JwtTokenVerificationFilter implements Filter {
+@WebFilter(filterName = "common checker filter", urlPatterns = "/api/v1/**") 
+public class CommonCheckerFilter implements Filter {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtTokenVerificationFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(CommonCheckerFilter.class);
     
     @Override 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

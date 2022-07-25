@@ -57,9 +57,15 @@ public class JWTUtils {
 
     // 从token中还原user 
     public static UserAndPermissionDTO getUser(String token) {
-        
+        /**
+         *  parsePlaintextJwt 载荷为文本（不是Json），未签名
+            parseClaimsJwt 载荷为claims（即Json），未签名
+            parsePlaintextJws 载荷为文本（不是Json），已签名
+            parseClaimsJws 载荷为claims（即Json），已签名
+            
+         */
         JwtParser jwtParser = null;
-        Jwt<JwsHeader, Claims> jwt = null;
+        Jwt<JwsHeader, Claims> jws = null;
         Claims claims = null;
         try {
             jwtParser = Jwts.parserBuilder()
@@ -67,8 +73,8 @@ public class JWTUtils {
                     .requireIssuer(ConstantConfig.JWT_ISSUER)
                     .setSigningKey(Keys.hmacShaKeyFor(JWTUtils.signatureKeyBytes))
                     .build();
-            jwt = jwtParser.parseClaimsJws(token);
-            claims = jwt.getBody();
+            jws = jwtParser.parseClaimsJws(token);
+            claims = jws.getBody();
         }catch (MissingClaimException  mce) {
             log.error("MissingClaimException --> {}", mce.fillInStackTrace());
             // throw new MissingClaimException(jwt.getHeader(), claims, "MissingClaimException");

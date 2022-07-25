@@ -1,6 +1,7 @@
 package ledgerserver.service.impl;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Resource;
@@ -55,13 +56,13 @@ public class UserAcountServiceImpl implements UserAcountService {
         return null;
     }
     
-    @Override
+    @Override 
     public UserAcount getUserAcountByIdentifierAndPassword(String identifier, String password) {
         Optional<UserAcount> user = this.userAcountRepository.findByIdentifierAndPassword(identifier, password);
         return user.orElse(null);
     }
 
-    @Override
+    @Override 
     public UserAcount getUserById(Long id) {
         Optional<UserAcount> user = this.userAcountRepository.findById(id);
         return user.orElse(null);
@@ -100,46 +101,135 @@ public class UserAcountServiceImpl implements UserAcountService {
         return userAndPermissionDTO;
     }
 
+    /**
+     * 1 检查是否已经存在用户 
+     * 2 存在直接返回用户 不存在进入注册流程 
+     * 3 创建用户并保存 返回 
+     */
     @Override
     public UserAcount registUser(String identifier, String password) {
-        // TODO Auto-generated method stub
-        return null;
+        UserAcount userExist = this.getUserAcountByIdentifierAndPassword(identifier, password);
+        if(userExist != null) {
+            log.warn("用户已经存在 重复创建/请重新使用id 或使用此id登录 !");
+            return userExist;
+        }
+        UserAcount createdUser = this.userAcountRepository.save(new UserAcount(identifier, password));
+        
+        return createdUser;
     }
 
     @Override
     public UserAcount registUser(String identifier, String password, String roleType) {
-        // TODO Auto-generated method stub
-        return null;
+        UserAcount userExist = this.getUserAcountByIdentifierAndPassword(identifier, password);
+        if(userExist != null) {
+            log.warn("用户已经存在 重复创建/请重新使用id 或使用此id登录 !");
+            return userExist;
+        }
+        RoleType roleTypeEnum = RoleType.Of(roleType);
+        UserAcount createdUser = this.userAcountRepository.save(new UserAcount(identifier, password, roleTypeEnum));
+
+        return createdUser;
     }
 
+    /**
+     * 删除用户 
+     * 1 先判断是否存在这个用户 
+     * 2 存在 执行删除 
+     * 3 不存在 直接返回空对象 
+     */
     @Override
     public UserAcount deleteUser(Long id) {
-        // TODO Auto-generated method stub
+        Optional<UserAcount> user = this.userAcountRepository.findById(id);
+        if(user.isPresent()) {
+            log.warn("user exists ! deleting ...");
+            this.userAcountRepository.deleteById(id);
+            return user.get();
+        }
+        
+        log.info("用户不存在, 直接返回");
         return null;
     }
 
     @Override
     public UserAcount deleteUser(String identifier) {
-        // TODO Auto-generated method stub
+        UserAcount user = this.getUserByIdentifier(identifier);
+        if(user != null) {
+            log.warn("用户存在,执行删除操作");
+            this.userAcountRepository.deleteById(user.getId());
+            return user;
+        }
+        
+        log.info("用户不存在");
         return null;
     }
 
     @Override
     public UserAcount updateUserEmail(Long userId, String email) {
-        // TODO Auto-generated method stub
+        Optional<UserAcount> user = this.userAcountRepository.findById(userId);
+        if(user.isPresent()) {
+            UserAcount updatedUser = user.get();
+            updatedUser.setEmailAddress(email);
+            updatedUser = this.userAcountRepository.save(updatedUser);
+            
+            return updatedUser;
+        }
+        
+        log.warn("用户不存在, 更改无效");
         return null;
     }
 
     @Override
-    public UserAcount updateUserPhone(Long userId, String phoneNumber) {
-        // TODO Auto-generated method stub
+    public UserAcount updateUserPhone(Long userId, String phone) {
+        Optional<UserAcount> user = this.userAcountRepository.findById(userId);
+        if(user.isPresent()) {
+            UserAcount updatedUser = user.get();
+            updatedUser.setPhoneNumber(phone);
+            updatedUser = this.userAcountRepository.save(updatedUser);
+            
+            return updatedUser;
+        }
+        
+        log.warn("用户不存在, 更改无效");
         return null;
     }
 
     @Override
     public UserAcount updateUserName(Long userId, String userName) {
-        // TODO Auto-generated method stub
+        Optional<UserAcount> user = this.userAcountRepository.findById(userId);
+        if(user.isPresent()) {
+            UserAcount updatedUser = user.get();
+            updatedUser.setUserName(userName);
+            updatedUser = this.userAcountRepository.save(updatedUser);
+            
+            return updatedUser;
+        }
+        
+        log.warn("用户不存在, 更改无效");
         return null;
+    }
+
+    @Override
+    public RolePermissions addRolePermissions(RoleType roleType, List<String> permissions) {
+        RolePermissions rolePermissions = this.rolePermissionRepository.save(
+                    new RolePermissions(roleType, permissions)
+                );
+        return rolePermissions;
+    }
+
+    @Override
+    public RolePermissions addRolePermissions(RoleType roleType, String permissions) {
+        RolePermissions rolePermissions = this.rolePermissionRepository.save(
+                    new RolePermissions(roleType, permissions)
+                );
+        return rolePermissions;
+    }
+
+    @Override
+    public RolePermissions addRolePermissions(RoleType roleType, List<String> permissions, String description) {
+        RolePermissions rolePermissions = this.rolePermissionRepository.save(
+                    new RolePermissions(roleType, permissions, description)
+                );
+        return rolePermissions;
     }
     
     

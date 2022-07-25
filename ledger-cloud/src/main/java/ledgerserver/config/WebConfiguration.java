@@ -27,14 +27,6 @@ public class WebConfiguration implements WebMvcConfigurer {
         
     }
     
-    
-    // @Bean  // 使用WebFilter 注解 
-    public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean<>(new JwtTokenVerificationFilter());
-        filterRegistrationBean.addUrlPatterns("/**");
-        
-        return filterRegistrationBean;
-    }
 }
 
 

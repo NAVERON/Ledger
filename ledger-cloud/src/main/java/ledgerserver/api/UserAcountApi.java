@@ -29,13 +29,14 @@ public class UserAcountApi {
     
     // 注册用户账号 id = email / phone, 后期均可以修改 
     @PostMapping(value = "regist")
-    public ResponseEntity<String> regist(@RequestParam String identifier, @RequestParam String password){
+    public ResponseEntity<String> regist(@RequestParam(value = "id") String identifier, 
+            @RequestParam(value = "pwd") String password){
         // identifier 可以是邮箱 电话号码 可以作为id的 内容 
         // 允许用户修改电话或者邮箱 以及匿名名称 --> userName 
         // 注册 1 是否已经存在 2 参数校验,不包含特殊字符 3 密码加密 4 可以增加激活邮件 
         UserIdentifierTypeEnum userIdentifierType = UserIdentifierTypeEnum.of(identifier);
         if(userIdentifierType.getMarkName().equals(UserIdentifierTypeEnum.NULL.getMarkName())) {
-            return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body("identifier invalid");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("identifier invalid");
         }
         
         return ResponseEntity.ok("regist successful");
@@ -76,6 +77,8 @@ public class UserAcountApi {
     @PostMapping(value = "logout")
     public ResponseEntity<String> logout(@RequestParam(value = "id") Long userId){
         log.info("user id = {} Logout !", userId);
+        
+        
         return ResponseEntity.ok("logout successful");
     }
     

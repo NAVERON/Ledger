@@ -34,7 +34,7 @@ public enum UserIdentifierTypeEnum {
     public static UserIdentifierTypeEnum byName(String markName, String value) {
         Optional<UserIdentifierTypeEnum> userType 
                 = Arrays.asList(UserIdentifierTypeEnum.values()).stream()
-                .filter(type -> type.markName.equals(markName))
+                .filter(type -> type.markName.equals(markName.toUpperCase()))
                 .map(type -> type.setValue(value))
                 .findAny();
         
