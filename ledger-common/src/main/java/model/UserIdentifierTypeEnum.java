@@ -10,7 +10,7 @@ public enum UserIdentifierTypeEnum {
     // 用户的id类型 
     NULL("NULL", ""), PHONE("EMAIL", ""), EMAIL("PHONE", "");
     
-    private String markName;  // 表示当前类型 
+    private String markName;  // 表示当前类型  < enum name() 可以直接使用 > 
     private String value;  // 绑定的值 
     
     private UserIdentifierTypeEnum(String name, String value) {
@@ -31,18 +31,26 @@ public enum UserIdentifierTypeEnum {
         return this.value;
     }
     
-    public static UserIdentifierTypeEnum byName(String markName, String value) {
+    public Boolean isEmialType() {
+        return this.name().equals("EMAIL");
+    }
+    public Boolean isPhoneType() {
+        return this.name().equals("PHONE");
+    }
+    
+    public static UserIdentifierTypeEnum of(String identifierTypeName) {
+        final String typeName = identifierTypeName == null ? "" : identifierTypeName;
         Optional<UserIdentifierTypeEnum> userType 
                 = Arrays.asList(UserIdentifierTypeEnum.values()).stream()
-                .filter(type -> type.markName.equals(markName.toUpperCase()))
-                .map(type -> type.setValue(value))
+                .filter(type -> type.name().equals(typeName.toUpperCase()))
                 .findAny();
         
         return userType.orElse(UserIdentifierTypeEnum.NULL);
     }
     
     // 判断 id 属于哪种类型并返回 
-    public static UserIdentifierTypeEnum of(String userIdentifier){
+    public static UserIdentifierTypeEnum matchType(String userIdentifier){
+        userIdentifier = userIdentifier == null ? "" : userIdentifier;  // Null 值判断 
         // 可以使用 其他设计模式 这里不复杂化 
         UserIdentifierTypeEnum userIdentifierType = UserIdentifierTypeEnum.NULL;
         if(RegexMatcher.isValidPhoneNumber(userIdentifier)) {

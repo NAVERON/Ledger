@@ -9,6 +9,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import configuration.ConstantConfig;
+import model.HeaderTokenHolder;
 import model.user.UserAndPermissionDTO;
 import utils.JWTUtils;
 
@@ -59,12 +60,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             // 是否需要数据库检查是否是有效用户 ? 后期增加多重验证  需要验证jwt是否过期 强制用户刷新jwt重新请求接口, 但是会引入状态问题 后期考虑 
             if(user != null) {
                 log.info("解析出来的user对象 --> {}", user.toString());
+                // 保存当前header token 
+                HeaderTokenHolder.setHolderValue(token);
                 return HandlerInterceptor.super.preHandle(request, response, handler);
             }
         }
         log.info("please login for generate Token for U ! Header 没有 JWT Token, 请登录 api 获取");
         log.warn("跳转 ---> {}", request.getContextPath() + "/home");
-        response.sendRedirect("/home");
+        response.sendRedirect("/home");  // 验证失败直接跳转home ? 
         
         return false;
     }
@@ -82,6 +85,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             throws Exception {
         // response handle 
         log.info("AuthenticationInterceptor afterCompletion --> {}", response.toString());
+        HeaderTokenHolder.clearHolderValue();  // 清空对象 
+        
         HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
     }
     

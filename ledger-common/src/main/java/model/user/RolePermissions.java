@@ -23,12 +23,13 @@ public class RolePermissions {
     private Long id;
     @Column(name = "role_type")
     @Enumerated(value = EnumType.STRING) 
-    private RoleType roleType;
+    private RoleType roleType = RoleType.ANONYMITY;
     @Column(name = "description")
-    private String description;  // 特殊描述 
+    private String description = "";  // 特殊描述 
     @Column(name = "permissions")
-    private String permissions;  // 权限list 
+    private String permissions = "";  // 权限list 
     
+    public RolePermissions() {}
     public RolePermissions(RoleType roleType, String permissions) {
         this.roleType = roleType;
         this.permissions = permissions;

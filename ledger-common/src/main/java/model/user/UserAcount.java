@@ -26,7 +26,6 @@ import model.UserIdentifierTypeEnum;
 public class UserAcount {
     
     private static final Logger log = LoggerFactory.getLogger(UserAcount.class);
-    private static final UserAcount EMPTY_USER = new UserAcount(null, null);  // 创建一个空对象 避免空指针判断 
     
     // 账户 id 用户名 加密密码 登陆时间 登录日志关联的id 等 
     @Id 
@@ -44,11 +43,12 @@ public class UserAcount {
     @Enumerated(value = EnumType.STRING)
     private RoleType roleType = RoleType.ANONYMITY;
     @Column(name = "role_id")
-    private Long roleId;  // 这里不需要roleId 因为需要从权限表中查询 后期再解决  
+    private Long roleId = 3L;  // 这里不需要roleId 因为需要从权限表中查询 后期再解决  // 这里临时设置 实际需要根据角色设置  这里没有综合考虑 
     
+    public UserAcount() {}
     public UserAcount(String identifier, String password) {
         // 这种判断很多 如何消除此种类似的校验 ?  只设置一个identifier 另外设置一个标记表示是电话还是邮箱 ? 
-        UserIdentifierTypeEnum identifierType = UserIdentifierTypeEnum.of(identifier);
+        UserIdentifierTypeEnum identifierType = UserIdentifierTypeEnum.matchType(identifier);
         // 先判断是否违法 
         if(identifierType.getMarkName().equals(UserIdentifierTypeEnum.NULL.getMarkName())) {
             log.error("Constructure user --> {}, {}", identifier, password);

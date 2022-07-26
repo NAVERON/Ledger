@@ -83,6 +83,8 @@ public class MailClient {
     
     // 发送激活邮件 
     public void sendActiveAcountEmail(String to, Map<String, Object> params) {
+        log.info("邮件激活参数 --> {}", params);
+        
         String subject = "Active U Acount, Just Once ~";
         String template = "emailTemplate/EmailVerificationActive.html";
         this.sendHtmlEmail(to, subject, template, params);

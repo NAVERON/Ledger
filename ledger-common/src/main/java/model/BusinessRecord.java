@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 /**
  * 表示谁在什么时间消费了多少 
+ * 前期没有考虑多方面, 暂时这里表示客户使用的是一个客户端, 店里的消费记录表示有一个用户在xx这里消费了多少钱 
  * @author wangy
  *
  */
@@ -28,7 +29,8 @@ public class BusinessRecord {
     private Double amount;
     @Column(name = "record_time")
     private LocalDateTime recordTime;  // 记账时间 创建时间 
-    
+
+    public BusinessRecord() {}
     public BusinessRecord(Long userId, Double amount) {
         this.userId = userId;
         this.amount = amount;

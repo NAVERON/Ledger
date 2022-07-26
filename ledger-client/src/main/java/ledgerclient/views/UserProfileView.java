@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
+import model.user.UserAndPermissionDTO;
 
 /**
  * 自定义组件实现 用户icon 名称等其他内容的显示 
@@ -20,6 +21,8 @@ public class UserProfileView extends FlowPane {
     private Label roleDescription;
     private Button doAction;
     
+    private UserAndPermissionDTO user;
+    
     public UserProfileView() {
         this.getChildren().addAll(icon, userName, roleDescription, doAction);
     }
@@ -32,6 +35,16 @@ public class UserProfileView extends FlowPane {
         this.doAction.setOnAction(event);
     }
     
+    public void setUser(UserAndPermissionDTO user) {
+        this.user = user;
+    }
+    
+    public UserAndPermissionDTO getUser() {
+        return this.user;
+    }
+    
 }
+
+
 
 

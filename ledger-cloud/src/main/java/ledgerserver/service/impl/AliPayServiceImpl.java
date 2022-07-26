@@ -16,10 +16,18 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import ledgerserver.service.AliPayService;
 
+
+/**
+ * 阿里支付服务调用 
+ * 需要提前配置 admin 收款账户的信息 
+ * @author wangy
+ * 
+ */
 @Service 
 @Primary 
-public class AliPayServiceImpl {
+public class AliPayServiceImpl implements AliPayService {
     
     private static final Logger log = LoggerFactory.getLogger(AliPayServiceImpl.class);
     

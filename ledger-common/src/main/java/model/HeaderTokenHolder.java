@@ -1,5 +1,7 @@
 package model;
 
+import java.lang.reflect.InaccessibleObjectException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,11 @@ public class HeaderTokenHolder {
         }
     }
     
+    public static void clearHolderValue() {
+        HeaderTokenHolder.authenticationToken.remove();
+        HeaderTokenHolder.user = null;
+    }
+    
     public static String getHolderValue() {
         return HeaderTokenHolder.authenticationToken.get();
     }
@@ -41,9 +48,19 @@ public class HeaderTokenHolder {
     }
     
     public static UserAndPermissionDTO currentUser() {
+        if(HeaderTokenHolder.user == null) {
+            throw new InaccessibleObjectException("当前threadlocal 对象不存在");
+        }
         return HeaderTokenHolder.user;
     }
     
+    public static Long currentUserId() {
+        if(user != null) {
+            return user.getId();
+        }
+        
+        return -1L;
+    }
     public static RoleType currentUserRole() {
         // 本类中静态对象可以直接变量名使用 
         if(user != null) {

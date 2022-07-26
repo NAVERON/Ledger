@@ -32,11 +32,6 @@ public class RegexMatcher {
         return matcher.matches();
     }
     
-    public static UserIdentifierTypeEnum userIdentifierType(String userIdentifier) {
-        UserIdentifierTypeEnum type = UserIdentifierTypeEnum.of(userIdentifier);
-        return type;
-    }
-    
 }
 
 

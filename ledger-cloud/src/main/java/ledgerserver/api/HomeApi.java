@@ -20,13 +20,31 @@ public class HomeApi {
     private static final Logger log = LoggerFactory.getLogger(HomeApi.class);
     
     // 获取api相关的基本信息 可以做成文档形式的api 接口
-    @GetMapping(value = "doc")
+    @GetMapping(value = "docs/index")
+    public ResponseEntity<String> docIndex(){
+        String doc = """
+                document for API information / INDEX 
+                ------------------------------------ 
+                1. /docs/user  user related API 
+                2. /docs/role role permission related API 
+                3. /docs/business business flow recording API 
+                4. /docs/statistic statistic for API using ststus 
+                ------------------------------------  
+                """;
+        return ResponseEntity.ok(doc);
+    }
+    
+    @GetMapping(value = "docs/user")
     public ResponseEntity<String> info(){
         String doc = """
-                document for API information  
-                ----------------- 
+                document for API information 
+                ---------------------------- 
+                About User API Usage : 
+                ============================ 
+                1. /api/v1/user/regist regist new user 
+                2. 
                 """;
-        return ResponseEntity.ok("doc");
+        return ResponseEntity.ok(doc);
     }
     
     @GetMapping(value = "index")

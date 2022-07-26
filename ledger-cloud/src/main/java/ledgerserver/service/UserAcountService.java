@@ -2,6 +2,7 @@ package ledgerserver.service;
 
 import java.util.List;
 
+import model.UserIdentifierTypeEnum;
 import model.user.RolePermissions;
 import model.user.RoleType;
 import model.user.UserAcount;
@@ -20,8 +21,11 @@ public interface UserAcountService {
     public UserAndPermissionDTO getUserAndPermissions(String identifier, String password);
     
     // 注册新用户 
+    public UserAcount registUser(UserAcount user);
+    public UserAcount registUser(UserIdentifierTypeEnum userIdentifier, String password);
     public UserAcount registUser(String identifier, String password);
     public UserAcount registUser(String identifier, String password, String roleType);
+    public UserAcount activeUser(UserIdentifierTypeEnum userIdentifier, String code);
     // 删除用户账号信息 
     public UserAcount deleteUser(Long id);
     public UserAcount deleteUser(String identifier);  // 根据标识删除 邮箱或电话 其他删除不成功 

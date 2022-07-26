@@ -1,7 +1,10 @@
 package ledgerserver.service.impl;
 
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Resource;
@@ -14,11 +17,14 @@ import org.springframework.stereotype.Service;
 import ledgerserver.jpadao.RolePermissionRepository;
 import ledgerserver.jpadao.UserAcountRepository;
 import ledgerserver.service.UserAcountService;
+import ledgerserver.utils.MailClient;
+import ledgerserver.utils.RedisUtils;
 import model.UserIdentifierTypeEnum;
 import model.user.RolePermissions;
 import model.user.RoleType;
 import model.user.UserAcount;
 import model.user.UserAndPermissionDTO;
+import utils.RandomUtils;
 
 @Service 
 @Primary 
@@ -29,6 +35,10 @@ public class UserAcountServiceImpl implements UserAcountService {
     private UserAcountRepository userAcountRepository;
     @Resource 
     private RolePermissionRepository rolePermissionRepository;
+    @Resource 
+    private RedisUtils redisUtils;
+    @Resource 
+    private MailClient mailClient;
 
     @Override
     public UserAcount getUserByEmail(String email) {
@@ -44,7 +54,7 @@ public class UserAcountServiceImpl implements UserAcountService {
 
     @Override
     public UserAcount getUserByIdentifier(String identifier) {
-        UserIdentifierTypeEnum userIdentifierType = UserIdentifierTypeEnum.of(identifier);
+        UserIdentifierTypeEnum userIdentifierType = UserIdentifierTypeEnum.matchType(identifier);
         
         if(userIdentifierType.getMarkName().equals(UserIdentifierTypeEnum.EMAIL.getMarkName())) {
             return this.getUserByEmail(identifier);
@@ -100,6 +110,66 @@ public class UserAcountServiceImpl implements UserAcountService {
         
         return userAndPermissionDTO;
     }
+    
+    // 生成激活码 并发送激活邮箱链接 
+    public String sendActiveEmail(String identifier) {
+        String code = RandomUtils.generateRandomString(10);
+        log.info("当前生成的激活码是 = {}", code);
+        // 这个激活链路设计没有考虑周全 暂时先完成基本功能, 以后再详细设计 
+        String activeUrl = "localhost:8888/api/v1/user/active?id=" + identifier + "&code=" + code;
+        log.info("激活链接 --> {}", activeUrl);
+        
+        Map<String, Object> mapParams = new HashMap<>();
+        mapParams.put("userName", identifier);
+        mapParams.put("registDate", LocalDateTime.now().toString());
+        mapParams.put("identifier", identifier);
+        mapParams.put("activeCode", code);
+        mapParams.put("url", activeUrl);
+        this.mailClient.sendActiveAcountEmail("naveron@163.com", mapParams);
+        
+        return code;
+    }
+    
+    @Override 
+    public UserAcount registUser(UserAcount user) {
+        // 构造一个不完全对象 设置关键属性 
+        UserAcount userExist = null;
+        if(!user.getEmailAddress().isBlank()) {
+            userExist = this.getUserAcountByIdentifierAndPassword(user.getEmailAddress(), user.getPassword());
+        }else if(!user.getPhoneNumber().isBlank()) {
+            userExist = this.getUserAcountByIdentifierAndPassword(user.getPhoneNumber(), user.getPassword());
+        }else {
+            log.error("user 对象构造多雾 --> {}", user.toString());
+            return null;
+        }
+        
+        if(userExist != null) {
+            log.warn("用户已经存在 重复创建/请重新使用id 或使用此id登录 !");
+            return userExist;
+        }
+        
+        // UserAcount createdUser = this.userAcountRepository.save(user);
+        String userJSON = redisUtils.cacheRegistUser(user, this.sendActiveEmail(user.getEmailAddress() + user.getPhoneNumber()));
+        log.info("缓存redis user对象 JSON --> {}", userJSON);
+        
+        return user;
+    }
+    
+    @Override 
+    public UserAcount registUser(UserIdentifierTypeEnum userIdentifier, String password) {
+        UserAcount userExist = this.getUserAcountByIdentifierAndPassword(userIdentifier.getValue(), password);;
+        if(userExist != null) {
+            log.warn("用户已经存在 重复创建/请重新使用id 或使用此id登录 !");
+            return userExist;  // 这里如果重复创建可以返回标志表示已经有user账户存在 
+        }
+        // 不应该在user构造方法上判断 应当做成2个不同的入口 
+        // UserAcount createdUser = this.userAcountRepository.save(new UserAcount(userIdentifier.getValue(), password));
+        UserAcount cacheUser = new UserAcount(userIdentifier.getValue(), password);
+        String userJSON = redisUtils.cacheRegistUser(cacheUser, this.sendActiveEmail(userIdentifier.getValue()));
+        log.info("缓存redis user对象 JSON --> {}", userJSON);
+        
+        return cacheUser;
+    }
 
     /**
      * 1 检查是否已经存在用户 
@@ -113,9 +183,12 @@ public class UserAcountServiceImpl implements UserAcountService {
             log.warn("用户已经存在 重复创建/请重新使用id 或使用此id登录 !");
             return userExist;
         }
-        UserAcount createdUser = this.userAcountRepository.save(new UserAcount(identifier, password));
+        // UserAcount createdUser = this.userAcountRepository.save(new UserAcount(identifier, password));
+        UserAcount cacheUser = new UserAcount(identifier, password);
+        String userJSON = redisUtils.cacheRegistUser(cacheUser, this.sendActiveEmail(identifier));
+        log.info("缓存redis user对象 JSON --> {}", userJSON);
         
-        return createdUser;
+        return cacheUser;
     }
 
     @Override
@@ -126,9 +199,25 @@ public class UserAcountServiceImpl implements UserAcountService {
             return userExist;
         }
         RoleType roleTypeEnum = RoleType.Of(roleType);
-        UserAcount createdUser = this.userAcountRepository.save(new UserAcount(identifier, password, roleTypeEnum));
-
-        return createdUser;
+        // UserAcount createdUser = this.userAcountRepository.save(new UserAcount(identifier, password, roleTypeEnum));
+        UserAcount cacheUser = new UserAcount(identifier, password, roleTypeEnum);
+        String userJSON = redisUtils.cacheRegistUser(cacheUser, this.sendActiveEmail(identifier));
+        log.info("缓存redis user对象 JSON --> {}", userJSON);
+        
+        return cacheUser;
+    }
+    
+    @Override 
+    public UserAcount activeUser(UserIdentifierTypeEnum userIdentifier, String code) {
+        UserAcount user = redisUtils.getRegistUserCache(userIdentifier.getValue(), code);
+        if(user == null) {
+            log.error("当前用户没有注册, 或者注册码等id认证错误");
+            return null;
+        }
+        // 持久化user 
+        user = this.userAcountRepository.save(user);
+        
+        return user;
     }
 
     /**

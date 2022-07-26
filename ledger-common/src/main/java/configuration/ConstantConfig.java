@@ -1,14 +1,8 @@
 package configuration;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import model.user.UserAndPermissionDTO;
 
 /**
  * 设置型的常量参数 
@@ -27,17 +21,22 @@ public class ConstantConfig {
     public static final String JWT_ISSUER = "LEDGER#CLIENT";
     
     public static final String REDIS_TOKEN_PREFIX = "AUTH_TOKEN:";
+    public static final String REDIS_REGIST_CACHE_KEY = "REGIST_USER:";
     
     // 免权限url 不需要验证 token 
     public static final List<String> EXCLUDE_AUTH_URLs = Collections.unmodifiableList(Arrays.asList(
+                "/", 
+                "/docs/**", 
                 "/home", 
                 "/index", 
                 "/404", 
                 "/error", 
                 "/**/info", 
+                "/**/doc", 
                 
                 "/api/v1/user/regist", 
-                "/api/v1/user/active", 
+                "/api/v1/user/active_email", 
+                "/api/v1/user/active_phone", 
                 "/api/v1/user/login", 
                 "/api/v1/user/logout", 
                 
@@ -48,21 +47,6 @@ public class ConstantConfig {
                 "/**/*.png" 
             ));
     
-    
-    public static Date convertLocalDateToDate(LocalDate localDate) {
-        return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-    }
-    public static LocalDate convertDateToLocalDate(Date date) {
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-    public static Date expirationDate(Date now) {
-        Long expireInMillis = TimeUnit.HOURS.toMillis(1L);
-        return new Date(expireInMillis + now.getTime());
-    }
-    
-    public static final String generateRedisTokenKey(UserAndPermissionDTO user) {
-        return ConstantConfig.REDIS_TOKEN_PREFIX + user.getId() + "#" + user.getRoleType().name();
-    }
 }
 
 
