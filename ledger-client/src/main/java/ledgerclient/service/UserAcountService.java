@@ -12,7 +12,11 @@ import org.slf4j.LoggerFactory;
 public class UserAcountService {
 
     private static final Logger log = LoggerFactory.getLogger(UserAcountService.class);
+    private static final UserAcountService userService = new UserAcountService();
     
+    public static final UserAcountService getInstance() {
+        return userService;
+    }
     
 }
 

@@ -11,5 +11,11 @@ import org.slf4j.LoggerFactory;
 public class BusinessFlowService {
     
     private static final Logger log = LoggerFactory.getLogger(BusinessFlowService.class);
+    private static final BusinessFlowService businessService = new BusinessFlowService();
+    
+    public static final BusinessFlowService getInstance() {
+        return businessService;
+    }
+    
     
 }

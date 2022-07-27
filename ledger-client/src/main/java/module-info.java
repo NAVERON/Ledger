@@ -1,4 +1,4 @@
-module ledgerclient {
+open module ledgerclient {
     
     requires javafx.base;
     requires javafx.controls;

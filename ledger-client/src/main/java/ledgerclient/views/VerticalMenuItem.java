@@ -6,51 +6,45 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import ledgerclient.utils.IControlBinding;
 import ledgerclient.utils.IEventBinding;
-import model.user.UserAndPermissionDTO;
 
 /**
- * 自定义组件实现 用户icon 名称等其他内容的显示 
- * @author eron
+ * 左侧垂直菜单单元 
+ * @author eron 
  *
  */
-public class UserProfileView extends FlowPane implements IEventBinding {
+public class VerticalMenuItem extends HBox implements IEventBinding {
     
-    private static final Logger log = LoggerFactory.getLogger(UserProfileView.class);
-
+    private static final Logger log = LoggerFactory.getLogger(VerticalMenuItem.class);
+    
     private ImageView icon = new ImageView(
                 new Image(getClass().getResource("/assets/images/1.png").toExternalForm(), true)
             );
-    private Text userName = new Text("USER_NAME");
-    private Label roleDescription = new Label("DEFAULT");
-    private Button doAction = new Button("LOGIN_LOGOUT");
+    private Text menuItemName = new Text("DEFAULT");
+    private BooleanProperty selected = new SimpleBooleanProperty(); // 当前是否选中状态 绑定组件整体的样式 
     
-    private UserAndPermissionDTO user = UserAndPermissionDTO.createBuilder().build();
-    
-    public UserProfileView() {
+    public VerticalMenuItem(String name) {
         
         this.initComponent();
     }
     
     private void initComponent() {
-        this.setAlignment(Pos.TOP_CENTER);
+        this.setAlignment(Pos.CENTER_LEFT);
         
         icon.setFitWidth(100);
         icon.setFitHeight(100);
         
-        // 初始化组件 组件布局设计 
-        this.getChildren().addAll(icon, userName, roleDescription, doAction);
+        this.getChildren().addAll(icon, menuItemName);
         
         this.styleProperty().bind(
             Bindings
@@ -59,25 +53,27 @@ public class UserProfileView extends FlowPane implements IEventBinding {
             .otherwise(new SimpleStringProperty("-fx-background-color: #F4F4F4;"))
         );
         
-        this.setOnMouseClicked(e -> {
-            log.info("点击组件--> {}", this.componentID);
+        // 点击事件 改变 BooleanProperty 状态进而控制其他逻辑同步 
+        this.setOnMouseClicked((event) -> {
+            if(event.getClickCount() >= 2 || event.getButton() != MouseButton.PRIMARY) {
+                return;
+            }
+            
+            this.selected.set(!this.selected.getValue());
         });
+        this.selected.addListener((obs, oleState, newState) -> {
+            // 变化北京颜色  设置其他menu 还原 
+            log.info("选择状态发生变化, 组件id --> {}", this.componentID);
+            if(this.controller == null) {
+                return;
+            }
+            // 因为传递的是接口 所以接口需要实现通用的组件传递机制 
+        });
+        
     }
     
-    public void addDoActionButtonEventHandler(EventHandler<ActionEvent> event) {
-        this.doAction.setOnAction(event);
-    }
-    
-    public void setUser(UserAndPermissionDTO user) {
-        this.user = user;
-    }
-    
-    public UserAndPermissionDTO getUser() {
-        return this.user;
-    }
-
     /**
-     * 关于中心控制 消息传递的思路实现 
+     * 组件控制中心 
      */
     private String componentID;
     private IControlBinding controller;
@@ -94,7 +90,8 @@ public class UserProfileView extends FlowPane implements IEventBinding {
     public void binding(IControlBinding controller) {
         this.componentID = UUID.randomUUID().toString();
         this.controller = controller;
-        this.controller.bindACK(this.componentID, this);  // 这种调用会造成死循环 调用震荡 
+        // this.controller.bindingNodes(this);  // 这种调用会造成死循环 调用震荡 
+        this.controller.bindACK(this.componentID, this);
     }
 
     @Override 
@@ -103,7 +100,13 @@ public class UserProfileView extends FlowPane implements IEventBinding {
         this.componentID = null;
     }
     
+    
 }
+
+
+
+
+
 
 
 
