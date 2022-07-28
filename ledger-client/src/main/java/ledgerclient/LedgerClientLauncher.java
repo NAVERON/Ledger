@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import ledgerclient.service.UserAcountService;
 import ledgerclient.utils.LogicController;
 import ledgerclient.views.SplitInformationTabPane;
 import ledgerclient.views.UserProfileView;
@@ -29,29 +30,34 @@ public class LedgerClientLauncher extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Scene scene = new Scene(this.createContent());
+        Scene scene = new Scene(this.createContent(primaryStage));
         primaryStage.setScene(scene);
         primaryStage.setTitle("Ledger Launcher");
+        
+        primaryStage.setOnCloseRequest(e -> {  // 一些底层服务需要在这里清理 
+            UserAcountService.getInstance().destory();
+        });
         
         primaryStage.show();
     }
     
-    private Parent createContent() {
+    private Parent createContent(Stage primaryStage) {
         BorderPane root = new BorderPane();
-        LogicController controller = new LogicController();
+        LogicController controller = new LogicController(primaryStage);  // controller 中档所有顶级组件的中间通信器 
         
-        UserProfileView userProfile = new UserProfileView();
-        VerticalMenuBar menuBar = new VerticalMenuBar(new VerticalMenuItem("用户管理"));
-        SplitInformationTabPane tabPane = new SplitInformationTabPane(new Tab("测试"), new Tab("测试2"));
+        // 各个组件绑定controller 相互控制 
+        UserProfileView userProfile = new UserProfileView(controller);
+        VerticalMenuBar menuBar = new VerticalMenuBar(controller);
+        SplitInformationTabPane tabPane = new SplitInformationTabPane(controller);
         
         root.setTop(userProfile);
         root.setLeft(menuBar);
         root.setCenter(tabPane);
         
-        menuBar.addMenuItems(new VerticalMenuItem("FIRST"), new VerticalMenuItem("SECOND"));
+        menuBar.addMenuItems(new VerticalMenuItem("用户管理"), new VerticalMenuItem("FIRST"), new VerticalMenuItem("SECOND"));
+        tabPane.getTabs().addAll(new Tab("HELLO"));
         root.setPrefSize(1000, 600);
         // 组件绑定控制中心 
-        controller.bindingNodes(userProfile, menuBar, tabPane);
         
         return root;
     }

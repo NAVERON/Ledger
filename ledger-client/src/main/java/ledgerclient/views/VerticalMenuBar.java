@@ -1,25 +1,30 @@
 package ledgerclient.views;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ModifiableObservableListBase;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
-import ledgerclient.utils.IControlBinding;
-import ledgerclient.utils.IEventBinding;
+import javafx.scene.paint.Color;
+import ledgerclient.utils.LogicController;
 
-public class VerticalMenuBar extends VBox implements IEventBinding {
+
+public class VerticalMenuBar extends VBox {
     
     private static final Logger log = LoggerFactory.getLogger(VerticalMenuBar.class);
+    private LogicController controller;
     
     // 保存菜单控制  以后做成 自动更新 
     private ObservableList<VerticalMenuItem> menuItems = FXCollections.observableArrayList();
@@ -27,15 +32,40 @@ public class VerticalMenuBar extends VBox implements IEventBinding {
     public VerticalMenuBar() {
         this.initComponent();
     }
+    public VerticalMenuBar(LogicController controller) {
+        this.controller = controller;
+        this.initComponent();
+    }
     public VerticalMenuBar(VerticalMenuItem... items) {
-        Arrays.asList(items).stream().forEach(item -> this.menuItems.add(item));
+        Arrays.asList(items).stream().forEach(item -> {
+            item.linkMenuBar(this);
+            this.menuItems.add(item);
+        });
         
         this.initComponent();
     }
     
     private void initComponent() {
-        this.getChildren().addAll(menuItems);
-        // Bindings.bindContentBidirectional(this.getChildren(), this.menuItems);  // observable 两个元素需要相同 
+        // this.getChildren().addAll(menuItems);
+        Bindings.bindContent(this.getChildren(), this.menuItems);  // 绑定动态变化的组件 
+        
+        this.setBorder(new Border(
+                new BorderStroke(
+                    Color.BLACK, 
+                    BorderStrokeStyle.SOLID, 
+                    CornerRadii.EMPTY, 
+                    BorderWidths.DEFAULT
+                )
+            )
+        );
+        
+        this.styleProperty().bind(
+            Bindings
+            .when(hoverProperty())
+            .then(new SimpleStringProperty("-fx-background-color: #43CD80;"))
+            .otherwise(new SimpleStringProperty("-fx-background-color: #F4F4F4;"))
+        );
+        
     }
     
     /**
@@ -45,8 +75,9 @@ public class VerticalMenuBar extends VBox implements IEventBinding {
      */
     public Boolean addMenuItem(VerticalMenuItem item) {
         Boolean status = Boolean.FALSE;
+        item.linkMenuBar(this);
         this.menuItems.add(item);
-        this.getChildren().add(item);
+        // this.getChildren().add(item);
         
         return status;
     }
@@ -59,48 +90,13 @@ public class VerticalMenuBar extends VBox implements IEventBinding {
         Arrays.asList(items).stream().forEach(item -> this.addMenuItem(item));
     }
     
-    /**
-     * 组件控制中心 
-     */
-    private String componentID;
-    private IControlBinding controller;
-
-    @Override 
-    public String getComponentID() {
-        if(this.controller == null || this.componentID == null) {
-            throw new IllegalAccessError("No Binding Controller Error");
-        }
-        return this.componentID;
-    }
-
-    @Override 
-    public void binding(IControlBinding controller) {
-        this.componentID = "BAR";// UUID.randomUUID().toString();
+    public void bindController(LogicController controller) {
         this.controller = controller;
-        // this.controller.bindingNodes(this);  // 这种调用会造成死循环 调用震荡 
-        this.controller.bindACK(this.componentID, this);
-        
-        // 子组件绑定 
-        this.menuItems.stream().forEach(item -> {
-            item.binding(controller);
-        });
-        
-    }
-
-    @Override 
-    public void unBinding() {
-        this.controller = null;
-        this.componentID = null;
+        this.controller.linkMenuBar(this);
     }
     
-    public void makeItemUnselect() {
-        log.info("makeItemUnselect unselect");
-        this.menuItems.stream().forEach(item -> item.makeUnSelect());
-    }
-    
-    @Override
-    public void executeCommand(String from, String to, String command) {
-        this.makeItemUnselect();
+    public void unSelectAll() {
+        this.menuItems.stream().forEach(item -> item.unSelect());
     }
     
 }

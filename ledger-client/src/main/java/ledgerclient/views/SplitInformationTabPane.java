@@ -1,20 +1,23 @@
 package ledgerclient.views;
 
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import ledgerclient.utils.IControlBinding;
-import ledgerclient.utils.IEventBinding;
+import ledgerclient.utils.LogicController;
 
-public class SplitInformationTabPane extends TabPane implements IEventBinding {
+public class SplitInformationTabPane extends TabPane {
 
     private static final Logger log = LoggerFactory.getLogger(SplitInformationTabPane.class);
-    
+    private LogicController controller;
+    public SplitInformationTabPane() {
+        super();
+    }
+    public SplitInformationTabPane(LogicController controller) {
+        super();
+    }
     public SplitInformationTabPane(Tab... tabs) {
         super(tabs);
     }
@@ -28,35 +31,10 @@ public class SplitInformationTabPane extends TabPane implements IEventBinding {
         
         this.setPadding(new Insets(20));
     }
-    
-    private String componentID;
-    private IControlBinding controller;
 
-    @Override 
-    public String getComponentID() {
-        if(this.controller == null || this.componentID == null) {
-            throw new IllegalAccessError("No Binding Controller Error");
-        }
-        return this.componentID;
-    }
-
-    @Override 
-    public void binding(IControlBinding controller) {
-        this.componentID = UUID.randomUUID().toString();
+    public void bindController(LogicController controller) {
         this.controller = controller;
-        this.controller.bindACK(this.componentID, this);  // 这种调用会造成死循环 调用震荡 
+        this.controller.linkInformationTabPane(this);
     }
-
-    @Override 
-    public void unBinding() {
-        this.controller = null;
-        this.componentID = null;
-    }
-
-    @Override
-    public void executeCommand(String from, String to, String command) {
-        // TODO Auto-generated method stub
-        
-    }
-
+    
 }

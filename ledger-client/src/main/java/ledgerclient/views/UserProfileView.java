@@ -1,7 +1,5 @@
 package ledgerclient.views;
 
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,15 +8,24 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
-import ledgerclient.utils.IControlBinding;
-import ledgerclient.utils.IEventBinding;
+import ledgerclient.service.UserAcountService;
+import ledgerclient.utils.LogicController;
 import model.user.UserAndPermissionDTO;
 
 /**
@@ -26,10 +33,12 @@ import model.user.UserAndPermissionDTO;
  * @author eron
  *
  */
-public class UserProfileView extends FlowPane implements IEventBinding {
+public class UserProfileView extends FlowPane {
     
     private static final Logger log = LoggerFactory.getLogger(UserProfileView.class);
-
+    private LogicController controller;
+    private String currentUserToken;
+    
     /**
      * 使用 {{}} 完全初始化组件 这种初始化方法也不错 就是看起来不方便 
      */
@@ -41,6 +50,10 @@ public class UserProfileView extends FlowPane implements IEventBinding {
     private UserAndPermissionDTO user = UserAndPermissionDTO.createBuilder().build();
     
     public UserProfileView() {
+        this.initComponent();
+    }
+    public UserProfileView(LogicController controller) {
+        this.bindController(controller);
         this.initComponent();
     }
     public UserProfileView(UserAndPermissionDTO user) {
@@ -61,7 +74,7 @@ public class UserProfileView extends FlowPane implements IEventBinding {
         );
         
         this.setOnMouseClicked(event -> {
-            log.info("点击组件--> {}", this.componentID);
+            log.info("点击组件--> {}", "dede");
         });
         
         this.userICON.setFitWidth(100);
@@ -69,27 +82,55 @@ public class UserProfileView extends FlowPane implements IEventBinding {
         Circle clip = new Circle(50, 50, 50);
         this.userICON.setClip(clip);
         
+        this.userName.setLineSpacing(10);
+        this.roleDescription.setBorder(new Border(
+            new BorderStroke(
+                Color.BLACK, 
+                BorderStrokeStyle.SOLID, 
+                new CornerRadii(20), 
+                BorderWidths.DEFAULT
+            )
+        ));
+        
         ImageView loginICON = new ImageView(getClass().getResource("/assets/images/drink.png").toExternalForm());
         loginICON.setFitWidth(100);
         loginICON.setFitHeight(100);
+        
         this.userICON.setOnMouseClicked(event -> {
             if(event.getClickCount() >= 2 || event.getButton() != MouseButton.PRIMARY) {
                 return;
             }
             
-            this.isLogin.setValue(!this.isLogin.getValue());
+            if(this.isLogin.getValue()) {
+                log.info("当前已经登陆, 点击后是登出");
+                Alert alert = new Alert(AlertType.CONFIRMATION, "Lohout ?", ButtonType.YES, ButtonType.CANCEL);
+                alert.showAndWait();
+                if(alert.getResult() == ButtonType.YES) {
+                    // 确认登出 
+                    this.isLogin.setValue(!this.isLogin.getValue());
+                    log.info("当前用户登出  --> {}", this.currentUserToken);
+                    this.currentUserToken = null;
+                }
+                return;
+            }
+            
+            LoginStage loginView = new LoginStage(this);
+            loginView.initOwner(this.controller.getPrimaryStage());
+            loginView.showAndWait();
+            
+            // this.isLogin.setValue(!this.isLogin.getValue());  // 登录成功后设置 
         });
         this.isLogin.addListener((obs, oleState, newState) -> {
             log.info("登录状态发生变化");
-            if(this.controller == null) {
-                return;
-            }
+
             this.userICON.setImage(
                 this.isLogin.getValue() 
                 ? new Image(getClass().getResource("/assets/images/hashtag.png").toExternalForm()) 
                 : new Image(getClass().getResource("/assets/images/a.png").toExternalForm()) 
             );
         });
+        
+        this.setHgap(50);
     }
     
     public void setUser(UserAndPermissionDTO user) {
@@ -98,38 +139,26 @@ public class UserProfileView extends FlowPane implements IEventBinding {
     public UserAndPermissionDTO getUser() {
         return this.user;
     }
-
-    /**
-     * 关于中心控制 消息传递的思路实现 
-     */
-    private String componentID;
-    private IControlBinding controller;
-
-    @Override 
-    public String getComponentID() {
-        if(this.controller == null || this.componentID == null) {
-            throw new IllegalAccessError("No Binding Controller Error");
-        }
-        return this.componentID;
-    }
-
-    @Override 
-    public void binding(IControlBinding controller) {
-        this.componentID = UUID.randomUUID().toString();
+    
+    public void bindController(LogicController controller) {
         this.controller = controller;
-        this.controller.bindACK(this.componentID, this);  // 这种调用会造成死循环 调用震荡 
+        this.controller.linkUserProfile(this);
     }
-
-    @Override 
-    public void unBinding() {
-        this.controller = null;
-        this.componentID = null;
-    }
-    @Override
-    public void executeCommand(String from, String to, String command) {
-        // TODO Auto-generated method stub
+    
+    public String doLogin(String userName, String password) {
+        this.currentUserToken = UserAcountService.getInstance().doLogin(userName, password);
+        if(this.currentUserToken == null || this.currentUserToken.isBlank()) {
+            throw new IllegalArgumentException("token 是null或者是空的");
+        }
         
+        this.setLoginStatus(Boolean.TRUE);
+        return this.currentUserToken;
     }
+    
+    public void setLoginStatus(Boolean loginStatus) {
+        this.isLogin.setValue(loginStatus);
+    }
+    
     
 }
 
