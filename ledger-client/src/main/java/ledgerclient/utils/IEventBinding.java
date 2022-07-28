@@ -13,4 +13,7 @@ public interface IEventBinding {
     public void binding(IControlBinding controller);  // 组件 被动绑定 
     public void unBinding();
     
+    // 执行命令 
+    public void executeCommand(String from, String to, String command);
+    
 }

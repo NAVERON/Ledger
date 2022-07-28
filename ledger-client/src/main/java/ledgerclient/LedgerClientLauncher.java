@@ -16,8 +16,6 @@ import ledgerclient.views.VerticalMenuBar;
 import ledgerclient.views.VerticalMenuItem;
 
 
-
-
 public class LedgerClientLauncher extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(LedgerClientLauncher.class);
@@ -57,6 +55,7 @@ public class LedgerClientLauncher extends Application {
         
         return root;
     }
+    
 }
 
 

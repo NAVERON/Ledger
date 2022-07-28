@@ -12,4 +12,6 @@ public interface IControlBinding {
     public void unBindNode(IEventBinding node);
     public void unBindNode(String componentID);
     
+    // 命令传送 
+    public void commandTransfer(String from, String command);
 }

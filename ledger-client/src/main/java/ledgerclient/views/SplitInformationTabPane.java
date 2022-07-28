@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import ledgerclient.utils.IControlBinding;
@@ -25,6 +26,7 @@ public class SplitInformationTabPane extends TabPane implements IEventBinding {
             log.info("鼠标点击");
         });
         
+        this.setPadding(new Insets(20));
     }
     
     private String componentID;
@@ -49,6 +51,12 @@ public class SplitInformationTabPane extends TabPane implements IEventBinding {
     public void unBinding() {
         this.controller = null;
         this.componentID = null;
+    }
+
+    @Override
+    public void executeCommand(String from, String to, String command) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

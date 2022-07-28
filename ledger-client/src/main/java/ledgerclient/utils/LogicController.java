@@ -7,6 +7,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.scene.layout.HBox;
+import ledgerclient.views.VerticalMenuBar;
+import ledgerclient.views.VerticalMenuItem;
+
 /**
  * 控制字介面的协调关系 
  * @author wangy
@@ -48,6 +52,22 @@ public class LogicController implements IControlBinding {
         this.nodeMap.get(node.getComponentID()).unBinding();
     }
     
+    // 需要设计统一沟通模式 
+    public void checkoutSpecialNode() {
+        // 这种类似的结构可以实现 但是很生硬 
+        this.nodeMap.entrySet().stream()
+        .filter(x -> x.getValue().getClass().isInstance(VerticalMenuBar.class))
+        .map(x ->(VerticalMenuBar)x)
+        .forEach(x -> x.makeItemUnselect());
+    }
+    
+    @Override 
+    public void commandTransfer(String from, String command) {
+        log.info("从哪里来， 到哪里去， 执行什么命令 : {}, {}", from, command);
+        if(command.equals("CLEAR_ALL_MENUITEMs")) {
+            this.nodeMap.get("BAR").executeCommand(from, from, command);
+        }
+    }
 }
 
 

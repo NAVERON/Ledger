@@ -6,15 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import ledgerclient.utils.IControlBinding;
 import ledgerclient.utils.IEventBinding;
@@ -29,28 +30,28 @@ public class UserProfileView extends FlowPane implements IEventBinding {
     
     private static final Logger log = LoggerFactory.getLogger(UserProfileView.class);
 
-    private ImageView icon = new ImageView(
-                new Image(getClass().getResource("/assets/images/1.png").toExternalForm(), true)
-            );
+    /**
+     * 使用 {{}} 完全初始化组件 这种初始化方法也不错 就是看起来不方便 
+     */
+    private ImageView userICON = new ImageView(getClass().getResource("/assets/images/a.png").toExternalForm());
     private Text userName = new Text("USER_NAME");
     private Label roleDescription = new Label("DEFAULT");
-    private Button doAction = new Button("LOGIN_LOGOUT");
+    private BooleanProperty isLogin = new SimpleBooleanProperty();  // 表明当前是否已经登录 
     
     private UserAndPermissionDTO user = UserAndPermissionDTO.createBuilder().build();
     
     public UserProfileView() {
-        
+        this.initComponent();
+    }
+    public UserProfileView(UserAndPermissionDTO user) {
+        this.user = user;
         this.initComponent();
     }
     
     private void initComponent() {
-        this.setAlignment(Pos.TOP_CENTER);
-        
-        icon.setFitWidth(100);
-        icon.setFitHeight(100);
-        
         // 初始化组件 组件布局设计 
-        this.getChildren().addAll(icon, userName, roleDescription, doAction);
+        this.setAlignment(Pos.TOP_CENTER);
+        this.getChildren().addAll(userICON, userName, roleDescription);
         
         this.styleProperty().bind(
             Bindings
@@ -59,19 +60,41 @@ public class UserProfileView extends FlowPane implements IEventBinding {
             .otherwise(new SimpleStringProperty("-fx-background-color: #F4F4F4;"))
         );
         
-        this.setOnMouseClicked(e -> {
+        this.setOnMouseClicked(event -> {
             log.info("点击组件--> {}", this.componentID);
         });
-    }
-    
-    public void addDoActionButtonEventHandler(EventHandler<ActionEvent> event) {
-        this.doAction.setOnAction(event);
+        
+        this.userICON.setFitWidth(100);
+        this.userICON.setFitHeight(100);
+        Circle clip = new Circle(50, 50, 50);
+        this.userICON.setClip(clip);
+        
+        ImageView loginICON = new ImageView(getClass().getResource("/assets/images/drink.png").toExternalForm());
+        loginICON.setFitWidth(100);
+        loginICON.setFitHeight(100);
+        this.userICON.setOnMouseClicked(event -> {
+            if(event.getClickCount() >= 2 || event.getButton() != MouseButton.PRIMARY) {
+                return;
+            }
+            
+            this.isLogin.setValue(!this.isLogin.getValue());
+        });
+        this.isLogin.addListener((obs, oleState, newState) -> {
+            log.info("登录状态发生变化");
+            if(this.controller == null) {
+                return;
+            }
+            this.userICON.setImage(
+                this.isLogin.getValue() 
+                ? new Image(getClass().getResource("/assets/images/hashtag.png").toExternalForm()) 
+                : new Image(getClass().getResource("/assets/images/a.png").toExternalForm()) 
+            );
+        });
     }
     
     public void setUser(UserAndPermissionDTO user) {
         this.user = user;
     }
-    
     public UserAndPermissionDTO getUser() {
         return this.user;
     }
@@ -101,6 +124,11 @@ public class UserProfileView extends FlowPane implements IEventBinding {
     public void unBinding() {
         this.controller = null;
         this.componentID = null;
+    }
+    @Override
+    public void executeCommand(String from, String to, String command) {
+        // TODO Auto-generated method stub
+        
     }
     
 }

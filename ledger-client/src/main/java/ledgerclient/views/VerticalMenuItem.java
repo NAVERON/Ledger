@@ -9,19 +9,25 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import ledgerclient.utils.IControlBinding;
 import ledgerclient.utils.IEventBinding;
+import ledgerclient.utils.LogicController;
 
 /**
  * 左侧垂直菜单单元 
  * @author eron 
- *
+ * 
  */
 public class VerticalMenuItem extends HBox implements IEventBinding {
     
@@ -46,20 +52,18 @@ public class VerticalMenuItem extends HBox implements IEventBinding {
         
         this.getChildren().addAll(icon, menuItemName);
         
-        this.styleProperty().bind(
-            Bindings
-            .when(hoverProperty())
-            .then(new SimpleStringProperty("-fx-background-color: #43CD80;"))
-            .otherwise(new SimpleStringProperty("-fx-background-color: #F4F4F4;"))
-        );
-        
         // 点击事件 改变 BooleanProperty 状态进而控制其他逻辑同步 
         this.setOnMouseClicked((event) -> {
             if(event.getClickCount() >= 2 || event.getButton() != MouseButton.PRIMARY) {
                 return;
             }
             
-            this.selected.set(!this.selected.getValue());
+            if(this.selected.getValue()) {
+                return;
+            }
+            this.controller.commandTransfer(this.componentID, "CLEAR_ALL_MENUITEMs");
+            this.selected.setValue(!this.selected.getValue());
+            // this.selected.setValue(!this.selected.getValue());
         });
         this.selected.addListener((obs, oleState, newState) -> {
             // 变化北京颜色  设置其他menu 还原 
@@ -68,6 +72,12 @@ public class VerticalMenuItem extends HBox implements IEventBinding {
                 return;
             }
             // 因为传递的是接口 所以接口需要实现通用的组件传递机制 
+            this.backgroundProperty().bind(
+                Bindings.when(selected)
+                .then(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)))
+                .otherwise(new Background(new BackgroundFill(Color.AQUAMARINE, CornerRadii.EMPTY, Insets.EMPTY)))
+            );
+            
         });
         
     }
@@ -100,6 +110,15 @@ public class VerticalMenuItem extends HBox implements IEventBinding {
         this.componentID = null;
     }
     
+    public void makeUnSelect() {
+        this.selected.setValue(false);
+    }
+
+    @Override
+    public void executeCommand(String from, String to, String command) {
+        // TODO Auto-generated method stub
+        
+    }
     
 }
 

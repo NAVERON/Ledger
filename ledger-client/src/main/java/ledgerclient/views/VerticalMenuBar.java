@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ModifiableObservableListBase;
@@ -15,6 +18,8 @@ import ledgerclient.utils.IControlBinding;
 import ledgerclient.utils.IEventBinding;
 
 public class VerticalMenuBar extends VBox implements IEventBinding {
+    
+    private static final Logger log = LoggerFactory.getLogger(VerticalMenuBar.class);
     
     // 保存菜单控制  以后做成 自动更新 
     private ObservableList<VerticalMenuItem> menuItems = FXCollections.observableArrayList();
@@ -70,7 +75,7 @@ public class VerticalMenuBar extends VBox implements IEventBinding {
 
     @Override 
     public void binding(IControlBinding controller) {
-        this.componentID = UUID.randomUUID().toString();
+        this.componentID = "BAR";// UUID.randomUUID().toString();
         this.controller = controller;
         // this.controller.bindingNodes(this);  // 这种调用会造成死循环 调用震荡 
         this.controller.bindACK(this.componentID, this);
@@ -79,6 +84,7 @@ public class VerticalMenuBar extends VBox implements IEventBinding {
         this.menuItems.stream().forEach(item -> {
             item.binding(controller);
         });
+        
     }
 
     @Override 
@@ -87,6 +93,15 @@ public class VerticalMenuBar extends VBox implements IEventBinding {
         this.componentID = null;
     }
     
+    public void makeItemUnselect() {
+        log.info("makeItemUnselect unselect");
+        this.menuItems.stream().forEach(item -> item.makeUnSelect());
+    }
+    
+    @Override
+    public void executeCommand(String from, String to, String command) {
+        this.makeItemUnselect();
+    }
     
 }
 
