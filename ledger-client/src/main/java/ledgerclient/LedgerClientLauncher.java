@@ -54,8 +54,8 @@ public class LedgerClientLauncher extends Application {
         root.setLeft(menuBar);
         root.setCenter(tabPane);
         
-        menuBar.addMenuItems(new VerticalMenuItem("用户管理"), new VerticalMenuItem("FIRST"), new VerticalMenuItem("SECOND"));
-        tabPane.getTabs().addAll(new Tab("HELLO"));
+        menuBar.addMenuItems(new VerticalMenuItem("用户管理"), new VerticalMenuItem("流水管理"));
+        // tabPane.getTabs().addAll(new Tab("HELLO"));
         root.setPrefSize(1000, 600);
         // 组件绑定控制中心 
         

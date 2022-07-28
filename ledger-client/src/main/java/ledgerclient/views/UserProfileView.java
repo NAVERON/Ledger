@@ -7,6 +7,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -15,6 +16,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -25,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import ledgerclient.service.UserAcountService;
+import ledgerclient.utils.HttpClientUtils;
 import ledgerclient.utils.LogicController;
 import model.user.UserAndPermissionDTO;
 
@@ -66,11 +70,10 @@ public class UserProfileView extends FlowPane {
         this.setAlignment(Pos.TOP_CENTER);
         this.getChildren().addAll(userICON, userName, roleDescription);
         
-        this.styleProperty().bind(
-            Bindings
-            .when(hoverProperty())
-            .then(new SimpleStringProperty("-fx-background-color: #43CD80;"))
-            .otherwise(new SimpleStringProperty("-fx-background-color: #F4F4F4;"))
+        this.backgroundProperty().bind(
+            Bindings.when(hoverProperty())
+            .then(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)))
+            .otherwise(new Background(new BackgroundFill(Color.AQUAMARINE, CornerRadii.EMPTY, Insets.EMPTY)))
         );
         
         this.setOnMouseClicked(event -> {
@@ -87,7 +90,7 @@ public class UserProfileView extends FlowPane {
             new BorderStroke(
                 Color.BLACK, 
                 BorderStrokeStyle.SOLID, 
-                new CornerRadii(20), 
+                CornerRadii.EMPTY, 
                 BorderWidths.DEFAULT
             )
         ));
@@ -110,6 +113,8 @@ public class UserProfileView extends FlowPane {
                     this.isLogin.setValue(!this.isLogin.getValue());
                     log.info("当前用户登出  --> {}", this.currentUserToken);
                     this.currentUserToken = null;
+                    this.user = null;
+                    UserAcountService.currentUserID = -1L;
                 }
                 return;
             }
@@ -124,7 +129,7 @@ public class UserProfileView extends FlowPane {
             log.info("登录状态发生变化");
 
             this.userICON.setImage(
-                this.isLogin.getValue() 
+                newState // this.isLogin.getValue() 
                 ? new Image(getClass().getResource("/assets/images/hashtag.png").toExternalForm()) 
                 : new Image(getClass().getResource("/assets/images/a.png").toExternalForm()) 
             );
@@ -134,8 +139,13 @@ public class UserProfileView extends FlowPane {
     }
     
     public void setUser(UserAndPermissionDTO user) {
+        log.info("设置用户信息");
+        this.userName.setText(user.getUserName());
         this.user = user;
+        
+        UserAcountService.currentUserID = user.getId();  // 设置全局userid 
     }
+    
     public UserAndPermissionDTO getUser() {
         return this.user;
     }

@@ -21,6 +21,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import ledgerclient.utils.HttpClientUtils;
+import model.user.UserAndPermissionDTO;
+import utils.JWTUtils;
 
 
 
@@ -77,6 +80,10 @@ public class LoginStage extends Stage {
             log.info("执行登录动作, 并等待返回");
             String token = this.userProfile.doLogin(userNameTextField.getText().trim(), passwordTextField.getText().trim());
             log.info("获取到的token --> {}", token);
+            UserAndPermissionDTO user = JWTUtils.getUser(token);
+            log.info("获取到的user对象 --> {}", user);
+            this.userProfile.setUser(user);
+            HttpClientUtils.setToken(token);
             
             this.closeLoginStage();
         });

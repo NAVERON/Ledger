@@ -3,7 +3,10 @@ package ledgerclient.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.scene.control.Tab;
 import javafx.stage.Stage;
+import ledgerclient.service.BusinessFlowService;
+import ledgerclient.service.UserAcountService;
 import ledgerclient.views.SplitInformationTabPane;
 import ledgerclient.views.UserProfileView;
 import ledgerclient.views.VerticalMenuBar;
@@ -45,6 +48,18 @@ public class LogicController {
     
     public void unSelectAllMenuItems() {
         this.menuBar.unSelectAll();
+    }
+    
+    public Tab makeSPlitInformationCreateTab(String tabName) {
+        return this.informationTabPane.createTab(tabName);
+    }
+    
+    public String getUserinformation() {
+        return this.userProfile.getUser().toString();
+    }
+    
+    public String getRecentBusiness() {
+        return BusinessFlowService.getInstance().getRecentBusinessFlow(UserAcountService.currentUserID);
     }
 }
 

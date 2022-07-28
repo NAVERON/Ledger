@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -56,7 +57,7 @@ public class VerticalMenuItem extends HBox {
         this.icon.setFitHeight(70);
         
         this.getChildren().addAll(icon, menuItemName);
-        
+        this.setPadding(new Insets(10));
         this.setBackground(new Background(new BackgroundFill(Color.AQUAMARINE, CornerRadii.EMPTY, Insets.EMPTY)));
         // 点击事件 改变 BooleanProperty 状态进而控制其他逻辑同步 
         this.setOnMouseClicked((event) -> {
@@ -69,28 +70,33 @@ public class VerticalMenuItem extends HBox {
             
             this.menuBar.unSelectAll();  // 其他的可以通过menubar中的controller实现多层传递控制 
             this.selected.setValue(!this.selected.getValue());
+            
+            // 控制center的显示信息面板 
+            Tab selectedTab = this.menuBar.createInformationTab(this.menuItemName.getText());
+            
         });
         this.selected.addListener((obs, oleState, newState) -> {
             // 变化北京颜色  设置其他menu 还原 
             log.info("选择状态发生变化, 组件id --> {}", "dede");
             // 因为传递的是接口 所以接口需要实现通用的组件传递机制 
-            this.backgroundProperty().bind(
-                Bindings.when(selected)
-                .then(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY)))
-                .otherwise(new Background(new BackgroundFill(Color.AQUAMARINE, CornerRadii.EMPTY, Insets.EMPTY)))
+            this.backgroundProperty().set(
+                newState // ? selected  bindings.bind(select).when().otherwise 
+                ? new Background(new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY))
+                : new Background(new BackgroundFill(Color.AQUAMARINE, CornerRadii.EMPTY, Insets.EMPTY))
+                
             );
             
         });
         
         this.setBorder(new Border(
-                        new BorderStroke(
-                            Color.BLACK, 
-                            BorderStrokeStyle.SOLID, 
-                            CornerRadii.EMPTY, 
-                            BorderWidths.DEFAULT
-                        )
-                    )
-                );
+                new BorderStroke(
+                    Color.BLACK, 
+                    BorderStrokeStyle.SOLID, 
+                    CornerRadii.EMPTY, 
+                    BorderWidths.DEFAULT
+                )
+            )
+        );
         
     }
     

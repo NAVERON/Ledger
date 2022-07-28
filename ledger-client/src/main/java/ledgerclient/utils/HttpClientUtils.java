@@ -28,7 +28,7 @@ public class HttpClientUtils {
     private static String token = "";
     
     // 单例模式 
-    public static HttpClient getDefaultHttpClient() {
+    private static HttpClient getDefaultHttpClient() {
         if(client == null) {
             synchronized (HttpClientUtils.class) {
                 if(client == null) {
@@ -56,7 +56,8 @@ public class HttpClientUtils {
                 .GET()
                 .build();
         
-        CompletableFuture<HttpResponse<String>> getAsyncResponse = getDefaultHttpClient().sendAsync(request, BodyHandlers.ofString()); 
+        CompletableFuture<HttpResponse<String>> getAsyncResponse 
+                = getDefaultHttpClient().sendAsync(request, BodyHandlers.ofString()); 
         getAsyncResponse.whenComplete((response, error) -> {
             if(response != null) {
                 log.info("get response => " + response.statusCode());
@@ -81,7 +82,8 @@ public class HttpClientUtils {
                 .POST(BodyPublishers.ofString(requestBody))
                 .build();
         
-        CompletableFuture<HttpResponse<String>> postAsyncResponse = getDefaultHttpClient().sendAsync(request, BodyHandlers.ofString());
+        CompletableFuture<HttpResponse<String>> postAsyncResponse 
+                = getDefaultHttpClient().sendAsync(request, BodyHandlers.ofString());
         postAsyncResponse.whenComplete((response, error) -> {
             if(response != null) {
                 log.info("post response => " + response.statusCode());
@@ -95,7 +97,9 @@ public class HttpClientUtils {
         return postAsyncResponse;
     }
     
-    
+    public static void setToken(String token) {
+        HttpClientUtils.token = token;
+    }
 }
 
 

@@ -23,6 +23,7 @@ import ledgerserver.service.BusinessRecordService;
 import model.BusinessRecord;
 import model.user.RoleType;
 import utils.DateAndTimeTransferUtils;
+import utils.JsonUtils;
 
 @RestController 
 @RequestMapping(value = "api/v1/business", name = "business flow options") 
@@ -55,7 +56,7 @@ public class BusinessFlowInApi {
     public ResponseEntity<String> queryRecentDealsOfUser(@RequestParam(value = "uid") Long userId) {
         List<BusinessRecord> recentDeals = this.businessRecordService.getRecentBusinessRecordsOfUser(userId);
         
-        return ResponseEntity.ok(recentDeals.toString());
+        return ResponseEntity.ok(JsonUtils.toJsonString(recentDeals));
     }
     
     // start end format = yyyy-MM-ddTHH:mm:ss 
@@ -66,7 +67,7 @@ public class BusinessFlowInApi {
         LocalDateTime endTime = DateAndTimeTransferUtils.parseStringToLocalDateTime(end, null);
         List<BusinessRecord> records = this.businessRecordService.getBusinessRecordsAtTimeRangeOfUser(userId, startTime, endTime);
         
-        return ResponseEntity.ok(records.toString());
+        return ResponseEntity.ok(JsonUtils.toJsonString(records));
     }
     
 }
