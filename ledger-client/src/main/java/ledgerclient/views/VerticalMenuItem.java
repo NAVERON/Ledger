@@ -65,6 +65,7 @@ public class VerticalMenuItem extends HBox {
                 return;
             }
             if(this.selected.getValue()) {
+                Tab selectedTab = this.menuBar.createInformationTab(this.menuItemName.getText());
                 return;
             }
             

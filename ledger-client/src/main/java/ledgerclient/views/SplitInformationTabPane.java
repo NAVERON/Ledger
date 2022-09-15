@@ -71,9 +71,8 @@ public class SplitInformationTabPane extends TabPane {
         tab.setOnCloseRequest(e ->{
             this.tabMap.remove(tabName);
         });
-        this.getSelectionModel().select(tab);
-        
         this.getTabs().add(tab);
+        this.getSelectionModel().select(tab);  // 需要先加入tabs model, 才能控制选择状态 
         
         return tab;
     }
