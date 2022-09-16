@@ -2,11 +2,13 @@ package ledgerclient.views;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,7 +45,7 @@ public class VerticalMenuBar extends VBox {
         this.initComponent();
     }
     public VerticalMenuBar(LogicController controller) {
-        this.controller = controller;
+        this.bindController(controller);
         this.initComponent();
     }
     public VerticalMenuBar(VerticalMenuItem... items) {
@@ -133,6 +135,11 @@ public class VerticalMenuBar extends VBox {
         
     public void unSelectAll() {
         this.menuItems.stream().forEach(item -> item.unSelect());
+    }
+
+    public void select(String tabKey) {
+    	this.unSelectAll();
+    	this.menuItems.stream().filter(item -> item.getMenuItemName().equals(tabKey)).findFirst().ifPresent(item -> item.select());;
     }
     
     public Tab createInformationTab(String tabName) {

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -31,7 +32,6 @@ public class SplitInformationTabPane extends TabPane {
     }
     public SplitInformationTabPane(LogicController controller) {
         super();
-        
         this.bindController(controller);
     }
     public SplitInformationTabPane(Tab... tabs) {
@@ -53,6 +53,11 @@ public class SplitInformationTabPane extends TabPane {
         this.controller.linkInformationTabPane(this);
     }
     
+    /**
+     * 如果需要菜单和tab双向绑定, 可以使用properties属性绑定, 更系统的解决这种随动问题  
+     * @param tabName
+     * @return
+     */
     public Tab createTab(String tabName) {  // 每一个tab设置一个名字,通过名字控制 
         if(this.tabMap.containsKey(tabName)) {
             log.info("已经存在, 无需创建,直接获取");
@@ -70,6 +75,11 @@ public class SplitInformationTabPane extends TabPane {
         tab.setGraphic(new Circle(20, Color.RED));
         tab.setOnCloseRequest(e ->{
             this.tabMap.remove(tabName);
+        });
+        tab.setOnSelectionChanged(event -> {
+        	if(tab.isSelected()) {
+        		this.controller.selectMenuItem(tab.getText());
+        	}
         });
         this.getTabs().add(tab);
         this.getSelectionModel().select(tab);  // 需要先加入tabs model, 才能控制选择状态 

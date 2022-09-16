@@ -101,13 +101,21 @@ public class VerticalMenuItem extends HBox {
         
     }
     
+    public String getMenuItemName() {
+    	return this.menuItemName.getText();
+    }
     public void linkMenuBar(VerticalMenuBar menuBar) {
         this.menuBar = menuBar;
     }
     public void unSelect() {
         this.selected.setValue(false);
     }
-    
+    public void select() {
+    	this.selected.setValue(true);
+    }
+    public BooleanProperty getSelectionProperty() {
+    	return this.selected;
+    }
 }
 
 

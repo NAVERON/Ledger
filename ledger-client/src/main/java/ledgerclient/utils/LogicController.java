@@ -49,6 +49,9 @@ public class LogicController {
     public void unSelectAllMenuItems() {
         this.menuBar.unSelectAll();
     }
+    public void selectMenuItem(String tabKey) {
+    	this.menuBar.select(tabKey);
+    }
     
     public Tab makeSPlitInformationCreateTab(String tabName) {
         return this.informationTabPane.createTab(tabName);

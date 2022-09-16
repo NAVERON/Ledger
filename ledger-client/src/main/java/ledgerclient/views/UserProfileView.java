@@ -150,7 +150,7 @@ public class UserProfileView extends FlowPane {
         return this.user;
     }
     
-    public void bindController(LogicController controller) {
+    public void bindController(LogicController controller) {  // 双向绑定 
         this.controller = controller;
         this.controller.linkUserProfile(this);
     }
