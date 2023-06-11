@@ -1,12 +1,8 @@
 package ledgerclient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ledgerclient.service.UserAcountService;
@@ -15,6 +11,8 @@ import ledgerclient.views.SplitInformationTabPane;
 import ledgerclient.views.UserProfileView;
 import ledgerclient.views.VerticalMenuBar;
 import ledgerclient.views.VerticalMenuItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class LedgerClientLauncher extends Application {

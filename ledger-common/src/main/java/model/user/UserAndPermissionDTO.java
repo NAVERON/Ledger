@@ -21,7 +21,7 @@ public class UserAndPermissionDTO {
     
     private UserAndPermissionDTO() {}
     public static UserAndPermissionBuilder createBuilder() {
-        return buildOuter.new UserAndPermissionBuilder();
+        return new UserAndPermissionBuilder();
     }
 
     private Long id = -1L;  // user_id 
@@ -31,7 +31,7 @@ public class UserAndPermissionDTO {
     private RoleType roleType = RoleType.ANONYMITY;
     private List<String> permissions = new LinkedList<String>();
     
-    public class UserAndPermissionBuilder {
+    public static class UserAndPermissionBuilder {
         UserAndPermissionDTO generateObj = new UserAndPermissionDTO();
         private UserAndPermissionBuilder() {}  // 禁止外部初始化 
         

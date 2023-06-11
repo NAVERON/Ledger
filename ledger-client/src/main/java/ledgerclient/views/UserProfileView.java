@@ -1,12 +1,8 @@
 package ledgerclient.views;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -28,9 +24,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import ledgerclient.service.UserAcountService;
-import ledgerclient.utils.HttpClientUtils;
 import ledgerclient.utils.LogicController;
 import model.user.UserAndPermissionDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 自定义组件实现 用户icon 名称等其他内容的显示 
