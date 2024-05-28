@@ -42,9 +42,6 @@ public class LoginStage extends Stage {
         
         this.initComponent();
     }
-    public LoginStage() {
-        this.initComponent();
-    }
     
     private void initComponent() {
         Scene scene = new Scene(this.createContent());
@@ -57,10 +54,10 @@ public class LoginStage extends Stage {
     private Parent createContent() {
         GridPane root = new GridPane();
         
-        Label userNameLabel = new Label("用户名称");
+        Label userNameLabel = new Label("user name");
         TextField userNameTextField = new TextField();
         userNameTextField.setPromptText("user name");
-        Label passwordLabel = new Label("用户密码");
+        Label passwordLabel = new Label("password");
         TextField passwordTextField = new TextField();
         passwordTextField.setPromptText("password");
         
@@ -69,16 +66,18 @@ public class LoginStage extends Stage {
         root.add(passwordLabel, 0, 1);
         root.add(passwordTextField, 1, 1);
         
-        Button cancel = new Button("取消");
+        Button cancel = new Button("CANCEL");
         cancel.setOnAction(e -> {
             log.info("登陆界面不做任何动作");
             this.closeLoginStage();
         });
-        Button ok = new Button("确定登录");
+        Button ok = new Button("DO");
         ok.setOnAction(e -> {
             // 异步登录 
             log.info("执行登录动作, 并等待返回");
-            String token = this.userProfile.doLogin(userNameTextField.getText().trim(), passwordTextField.getText().trim());
+            String token = this.userProfile.doLogin(
+                    userNameTextField.getText().trim(), passwordTextField.getText().trim()
+            );
             log.info("获取到的token --> {}", token);
             UserAndPermissionDTO user = JWTUtils.getUser(token);
             log.info("获取到的user对象 --> {}", user);

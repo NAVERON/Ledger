@@ -13,7 +13,7 @@ public class VerificationProcessService {
     private static final Logger log = LoggerFactory.getLogger(VerificationProcessService.class);
     private static final VerificationProcessService verificationService = new VerificationProcessService();
     
-    public static final VerificationProcessService getInstance() {
+    public static VerificationProcessService getInstance() {
         return verificationService;
     }
     

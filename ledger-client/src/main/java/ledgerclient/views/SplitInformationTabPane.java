@@ -89,16 +89,16 @@ public class SplitInformationTabPane extends TabPane {
     
     private Parent createTabContent(String tabName) {
         VBox vb = new VBox();
-        vb.getChildren().add(new Label("当前tab" + tabName));
+        vb.getChildren().add(new Label("cur tab" + tabName));
         TextArea ta = new TextArea();
         vb.getChildren().add(ta);
         
-        Button info = new Button("获取流水");
+        Button info = new Button("GetFlows");
         vb.getChildren().add(info);
         info.setOnAction(e -> {
-            if(tabName.equals("用户管理")) {
+            if(tabName.equals("USER MANAGER")) {
                 // 请求用户数据 
-                ta.setText("获取的结果");
+                ta.setText("Query Results");
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e1) {
@@ -107,9 +107,9 @@ public class SplitInformationTabPane extends TabPane {
                 
                 String result = this.controller.getUserinformation();
                 ta.setText(result);
-            }else if(tabName.equals("流水管理")) {
+            }else if(tabName.equals("FLOW MANAGER")) {
                 
-                ta.setText("流水结果");
+                ta.setText("FLOW RESULTS");
                 
                 try {
                     Thread.sleep(2000);

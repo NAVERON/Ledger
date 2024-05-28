@@ -23,7 +23,6 @@ public class LedgerClientLauncher extends Application {
         System.out.println("Ledger Client Launcher");
         
         Application.launch(args);
-        
     }
 
     @Override
@@ -52,7 +51,7 @@ public class LedgerClientLauncher extends Application {
         root.setLeft(menuBar);
         root.setCenter(tabPane);
         
-        menuBar.addMenuItems(new VerticalMenuItem("用户管理"), new VerticalMenuItem("流水管理"));
+        menuBar.addMenuItems(new VerticalMenuItem("USER MANAGER"), new VerticalMenuItem("FLOW MANAGER"));
         // tabPane.getTabs().addAll(new Tab("HELLO"));
         root.setPrefSize(1000, 600);
         // 组件绑定控制中心 

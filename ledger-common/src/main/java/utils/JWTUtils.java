@@ -23,22 +23,23 @@ import model.user.RoleType;
 import model.user.UserAndPermissionDTO;
 
 /**
- * Json web Token 工具箱 
- * @author eron 
- * source : https://github.com/GabrielBB/jwt-java-utility 
- * usage : https://github.com/jwtk/jjwt 
+ * Json web Token 工具箱
+ *
+ * @author eron
+ * source : https://github.com/GabrielBB/jwt-java-utility
+ * usage : https://github.com/jwtk/jjwt
  */
 public class JWTUtils {
-    
+
     private static final Logger log = LoggerFactory.getLogger(JWTUtils.class);
-    
-    private static final byte[] signatureKeyBytes = 
+
+    private static final byte[] signatureKeyBytes =
             Encoders.BASE64.encode(ConstantConfig.JWT_SIGNATURE_KEY.getBytes()).getBytes();
-    
+
     public static String getToken(UserAndPermissionDTO user) {
         Date now = new Date();
         log.info("getToken now == {}", now.toString());
-        
+
         return Jwts.builder()
                 .setSubject(ConstantConfig.JWT_SUBJECT) // 主题 
                 .setId(user.getId().toString())
@@ -59,10 +60,10 @@ public class JWTUtils {
     public static UserAndPermissionDTO getUser(String token) {
         /**
          *  parsePlaintextJwt 载荷为文本（不是Json），未签名
-            parseClaimsJwt 载荷为claims（即Json），未签名
-            parsePlaintextJws 载荷为文本（不是Json），已签名
-            parseClaimsJws 载荷为claims（即Json），已签名
-            
+         parseClaimsJwt 载荷为claims（即Json），未签名
+         parsePlaintextJws 载荷为文本（不是Json），已签名
+         parseClaimsJws 载荷为claims（即Json），已签名
+
          */
         JwtParser jwtParser = null;
         Jwt<JwsHeader, Claims> jws = null;
@@ -75,24 +76,24 @@ public class JWTUtils {
                     .build();
             jws = jwtParser.parseClaimsJws(token);
             claims = jws.getBody();
-        }catch (MissingClaimException  mce) {
+        } catch (MissingClaimException mce) {
             log.error("MissingClaimException --> {}", mce.fillInStackTrace());
             // throw new MissingClaimException(jwt.getHeader(), claims, "MissingClaimException");
             return null;
-        }catch (SignatureException se) {
+        } catch (SignatureException se) {
             log.error("SignatureException --> {}", se.getMessage());
             // throw new SignatureException(se.toString());
             return null;
-        }catch (IncorrectClaimException  ice) {
+        } catch (IncorrectClaimException ice) {
             log.error("IncorrectClaimException --> {}", ice.getCause());
             // throw new IncorrectClaimException(jwt.getHeader(), claims, "IncorrectClaimException");
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             log.error("Exception --> {}", e.toString());
             return null;
         }
-        
+
         UserAndPermissionDTO user = UserAndPermissionDTO.createBuilder()
                 .id(Long.parseLong(claims.getId()))
                 .userName(claims.getAudience())
@@ -101,11 +102,11 @@ public class JWTUtils {
                 .roleType(RoleType.Of(claims.get("role").toString()))
                 .permissionString(claims.get("permission").toString())
                 .build();
-        
+
         return user;
     }
-    
-    
+
+
 }
 
 

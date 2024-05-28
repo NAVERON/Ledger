@@ -21,9 +21,9 @@ public class BusinessFlowService {
     private static final Logger log = LoggerFactory.getLogger(BusinessFlowService.class);
     private static final BusinessFlowService businessService = new BusinessFlowService();
     
-    private String businessFlowBaseURL = "http://localhost:8888/api/v1/business";
+    private final String businessFlowBaseURL = "http://localhost:8888/api/v1/business";
     
-    public static final BusinessFlowService getInstance() {
+    public static BusinessFlowService getInstance() {
         return businessService;
     }
     

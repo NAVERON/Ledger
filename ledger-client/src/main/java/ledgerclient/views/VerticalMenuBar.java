@@ -36,10 +36,10 @@ public class VerticalMenuBar extends VBox {
     
     private static final Logger log = LoggerFactory.getLogger(VerticalMenuBar.class);
     private LogicController controller;
-    private HBox addMenu = new HBox();  // 单独管理 
+    private final HBox addMenu = new HBox();  // 单独管理
     
     // 保存菜单控制  以后做成 自动更新 
-    private ObservableList<VerticalMenuItem> menuItems = FXCollections.observableArrayList();
+    private final ObservableList<VerticalMenuItem> menuItems = FXCollections.observableArrayList();
     
     public VerticalMenuBar() {
         this.initComponent();
@@ -49,7 +49,7 @@ public class VerticalMenuBar extends VBox {
         this.initComponent();
     }
     public VerticalMenuBar(VerticalMenuItem... items) {
-        Arrays.asList(items).stream().forEach(item -> {
+        Arrays.stream(items).forEach(item -> {
             item.linkMenuBar(this);
             this.menuItems.add(item);
         });
@@ -85,14 +85,14 @@ public class VerticalMenuBar extends VBox {
         this.addMenu.setAlignment(Pos.CENTER);
         this.addMenu.setBackground(
                 new Background(new BackgroundFill(Color.GOLDENROD, CornerRadii.EMPTY, Insets.EMPTY))
-            );
+        );
         this.addMenu.setOnMouseClicked(e ->{
             if(this.menuItems.size() >= 4) {
                 log.info("增加的菜单过多");
                 return;
             }
             // 增加一个新的菜单 
-            VerticalMenuItem item = new VerticalMenuItem("新增菜单");
+            VerticalMenuItem item = new VerticalMenuItem("ADD NEW ITEM");
             item.linkMenuBar(this);
             this.menuItems.add(item);
         });
@@ -120,12 +120,12 @@ public class VerticalMenuBar extends VBox {
         return status;
     }
     public void addMenuItems(List<VerticalMenuItem> items) {
-        items.stream().forEach(item -> this.addMenuItem(item));
+        items.forEach(this::addMenuItem);
         // 可以直接使用menuitem直接添加 这样做方便后期修改, 如果在添加的时候额外动作, 直接改动一处即可 
     }
     public void addMenuItems(VerticalMenuItem... items) {
         // 迭代 方便后期维护, 直接修改 addMenuItem(VerticalMenuItem item) 即可全部同步修改 
-        Arrays.asList(items).stream().forEach(item -> this.addMenuItem(item));
+        Arrays.stream(items).forEach(this::addMenuItem);
     }
     
     public void bindController(LogicController controller) {
